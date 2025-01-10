@@ -3,15 +3,9 @@ BUILD_DIR?=../build/
 include $(BUILD_DIR)/software/include/generated/variables.mak
 include $(SOC_DIRECTORY)/software/common.mak
 
-OBJECTS   = donut.o helloc.o crt0.o main.o
-ifdef WITH_CXX
-	OBJECTS += hellocpp.o
-	CFLAGS += -DWITH_CXX
-endif
+OBJECTS   = crt0.o main.o
 
-
-all: demo.bin
-
+all: wyrm.bin
 
 %.bin: %.elf
 	$(OBJCOPY) -O binary $< $@
@@ -21,7 +15,7 @@ endif
 
 vpath %.a $(PACKAGES:%=../%)
 
-demo.elf: $(OBJECTS)
+wyrm.elf: $(OBJECTS)
 	$(CC) $(LDFLAGS) -T linker.ld -N -o $@ \
 		$(OBJECTS) \
 		$(PACKAGES:%=-L$(BUILD_DIR)/software/%) \
@@ -52,6 +46,6 @@ VPATH = $(BIOS_DIRECTORY):$(BIOS_DIRECTORY)/cmds:$(CPU_DIRECTORY)
 	$(assemble)
 
 clean:
-	$(RM) $(OBJECTS) demo.elf demo.bin .*~ *~
+	$(RM) $(OBJECTS) wyrm.elf wyrm.bin *.d .*~ *~
 
 .PHONY: all clean

@@ -21,7 +21,6 @@ from litex_boards.platforms import colorlight_5a_75b
 from litex.soc.cores.clock import *
 from litex.soc.cores.spi_flash import ECP5SPIFlash
 from litex.soc.cores.gpio import GPIOOut
-from litex.soc.cores.led import LedChaser
 from litex.soc.integration.soc_core import *
 from litex.soc.integration.builder import *
 
@@ -68,6 +67,7 @@ class Wyrm(SoCMini):
             platform,
             clk_freq=sys_clk_freq,
             cpu_type="vexriscv",
+            cpu_variant="standard+debug",
             integrated_sram_size=8*KB,
             with_uart=True,
             with_timer=True,
@@ -86,12 +86,20 @@ class Wyrm(SoCMini):
             clock_pads = self.platform.request("eth_clocks"),
             pads       = self.platform.request("eth"),
             tx_delay   = 0e-9)
+        self.add_csr("ethphy")
         self.add_etherbone(
             phy         = self.ethphy,
             ip_address  = ip_address,
             mac_address = mac_address,
-            data_width  = 32,
         )
+        # self.add_ethernet(
+        #     phy                     = self.ethphy,
+        #     local_ip                = ip_address,
+        #     mac_address             = mac_address
+        # )
+
+        # JTAG -------------------------------------------------------------------------------------
+        self.add_jtagbone()
 
         # SPIFlash ---------------------------------------------------------------------------------
         self.spiflash = ECP5SPIFlash(
@@ -108,12 +116,12 @@ def main():
     parser.add_argument("--load",        action="store_true",      help="Load bitstream")
     parser.add_argument("--flash",       action="store_true",      help="Flash bitstream")
     parser.add_argument("--rom",         default=None,             help="Bin file of firmware to load to internal ROM")
-    parser.add_argument("--ip-address",  default="192.168.1.20",   help="Ethernet IP address of the board (default: 192.168.1.20).")
+    parser.add_argument("--ip-address",  default="192.168.10.30",  help="Ethernet IP address of the board (default: 192.168.10.30).")
     parser.add_argument("--mac-address", default="0x726b895bc2e2", help="Ethernet MAC address of the board (defaullt: 0x726b895bc2e2).")
     args = parser.parse_args()
 
     soc     = Wyrm(ip_address=args.ip_address, mac_address=int(args.mac_address, 0), rom=args.rom)
-    builder = Builder(soc, output_dir="build", csr_csv="scripts/csr.csv")
+    builder = Builder(soc, output_dir="build", csr_csv="csr.csv")
     builder.build(build_name="wyrm", run=args.build)
 
     if args.load:
