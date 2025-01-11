@@ -50,7 +50,7 @@ class _CRG(LiteXModule):
 # ColorLite ----------------------------------------------------------------------------------------
 
 class Wyrm(SoCMini):
-    def __init__(self, sys_clk_freq=int(40e6), ip_address=None, mac_address=None, rom=None):
+    def __init__(self, sys_clk_freq=int(50e6), ip_address=None, mac_address=None, rom=None):
         SoCMini.mem_map = {
             "sram":         0x10000000,
             "spiflash":     0x20000000,
@@ -86,21 +86,21 @@ class Wyrm(SoCMini):
             clock_pads = self.platform.request("eth_clocks"),
             pads       = self.platform.request("eth"),
             tx_delay   = 0e-9)
-        self.add_csr("ethphy")
         self.add_etherbone(
             phy          = self.ethphy,
             ip_address   = ip_address,
             mac_address  = mac_address,
-            buffer_depth = 255,
+            data_width   = 32,
         )
-        # self.add_ethernet(
-        #     phy                     = self.ethphy,
-        #     local_ip                = ip_address,
-        #     mac_address             = mac_address
-        # )
+        self.add_ethernet(
+            phy          = self.ethphy,
+            local_ip     = ip_address,
+            mac_address  = mac_address,
+            data_width   = 32,
+        )
 
         # JTAG -------------------------------------------------------------------------------------
-        self.add_jtagbone()
+        # self.add_jtagbone()
 
         # SPIFlash ---------------------------------------------------------------------------------
         self.spiflash = ECP5SPIFlash(
