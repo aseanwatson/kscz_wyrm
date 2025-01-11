@@ -1,4 +1,9 @@
-LiteX-based MCU for display via UDP packets
+To build, you need to run with these parameters at the moment:
+```
+./wyrm.py --revision "8.2" --sys-clk-freq 50e6 --with-ethernet --eth-ip 192.168.10.30 --cpu-type vexriscv --build --flash
+```
+
+# LiteX-based MCU for display via UDP packets
 
 Getting started with LiteX on Arch linux:
 * Setup dependencies: `sudo pacman -S riscv64-elf-binutils riscv64-elf-gcc riscv64-elf-gdb riscv64-elf-newlib`

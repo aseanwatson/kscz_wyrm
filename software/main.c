@@ -16,12 +16,12 @@ void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_por
 
 int main(void)
 {
-    eth_init();
-    uart_init();
 #ifdef CONFIG_CPU_HAS_INTERRUPT
     irq_setmask(0);
     irq_setie(1);
 #endif
+    uart_init();
+    eth_init();
 
     printf("Hello Wyrm!\r\n");
 

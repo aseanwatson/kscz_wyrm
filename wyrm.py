@@ -1,139 +1,189 @@
 #!/usr/bin/env python3
 
-#
-# This file is part of Colorlite.
-#
-# Copyright (c) 2020-2022 Florent Kermarrec <florent@enjoy-digital.fr>
-# SPDX-License-Identifier: BSD-2-Clause
-
-import os
-import argparse
-import sys
-
 from migen import *
-from migen.genlib.misc import WaitTimer
 from migen.genlib.resetsync import AsyncResetSynchronizer
 
 from litex.gen import *
 
-from litex_boards.platforms import colorlight_5a_75b
+from litex.build.io import DDROutput
+
+from litex_boards.platforms import colorlight_5a_75b, colorlight_5a_75e, colorlight_i5a_907
 
 from litex.soc.cores.clock import *
-from litex.soc.cores.spi_flash import ECP5SPIFlash
-from litex.soc.cores.gpio import GPIOOut
 from litex.soc.integration.soc_core import *
 from litex.soc.integration.builder import *
+from litex.soc.cores.led import LedChaser
+
+from litedram.modules import M12L16161A, M12L64322A
+from litedram.phy import GENSDRPHY, HalfRateGENSDRPHY
 
 from liteeth.phy.ecp5rgmii import LiteEthPHYRGMII
-from litex.build.generic_platform import *
-
-# IOs ----------------------------------------------------------------------------------------------
-
-# TODO - figure out if we have anything here
 
 # CRG ----------------------------------------------------------------------------------------------
 
 class _CRG(LiteXModule):
-    def __init__(self, platform, sys_clk_freq):
+    def __init__(self, platform, sys_clk_freq, use_internal_osc=False, with_usb_pll=False, with_rst=True, sdram_rate="1:1"):
+        self.rst    = Signal()
         self.cd_sys = ClockDomain()
+        if sdram_rate == "1:2":
+            self.cd_sys2x    = ClockDomain()
+            self.cd_sys2x_ps = ClockDomain()
+        else:
+            self.cd_sys_ps = ClockDomain()
+
         # # #
 
-        # Clk / Rst.
-        clk25 = platform.request("clk25")
+        # Clk / Rst
+        if not use_internal_osc:
+            clk = platform.request("clk25")
+            clk_freq = 25e6
+        else:
+            clk = Signal()
+            div = 5
+            self.specials += Instance("OSCG",
+                                p_DIV = div,
+                                o_OSC = clk)
+            clk_freq = 310e6/div
 
-        # PLL.
+        rst_n = 1 if not with_rst else platform.request("user_btn_n", 0)
+
+        # PLL
         self.pll = pll = ECP5PLL()
-        # self.comb += pll.reset.eq(~rst_n)
-        pll.register_clkin(clk25, 25e6)
-        pll.create_clkout(self.cd_sys, sys_clk_freq)
+        self.comb += pll.reset.eq(~rst_n | self.rst)
+        pll.register_clkin(clk, clk_freq)
+        pll.create_clkout(self.cd_sys,    sys_clk_freq)
+        if sdram_rate == "1:2":
+            pll.create_clkout(self.cd_sys2x,    2*sys_clk_freq)
+            pll.create_clkout(self.cd_sys2x_ps, 2*sys_clk_freq, phase=180) # Idealy 90° but needs to be increased.
+        else:
+           pll.create_clkout(self.cd_sys_ps, sys_clk_freq, phase=180) # Idealy 90° but needs to be increased.
 
-# ColorLite ----------------------------------------------------------------------------------------
+        # USB PLL
+        if with_usb_pll:
+            self.usb_pll = usb_pll = ECP5PLL()
+            self.comb += usb_pll.reset.eq(~rst_n | self.rst)
+            usb_pll.register_clkin(clk, clk_freq)
+            self.cd_usb_12 = ClockDomain()
+            self.cd_usb_48 = ClockDomain()
+            usb_pll.create_clkout(self.cd_usb_12, 12e6, margin=0)
+            usb_pll.create_clkout(self.cd_usb_48, 48e6, margin=0)
 
-class Wyrm(SoCMini):
-    def __init__(self, sys_clk_freq=int(50e6), ip_address=None, mac_address=None, rom=None):
-        SoCMini.mem_map = {
-            "sram":         0x10000000,
-            "spiflash":     0x20000000,
-            "sdram":        0x40000000,
-            "csr":          0x82000000,
-        }
-        platform = colorlight_5a_75b.Platform(revision="8.2")
+        # SDRAM clock
+        sdram_clk = ClockSignal("sys2x_ps" if sdram_rate == "1:2" else "sys_ps")
+        self.specials += DDROutput(1, 0, platform.request("sdram_clock"), sdram_clk)
+
+# BaseSoC ------------------------------------------------------------------------------------------
+
+class BaseSoC(SoCCore):
+    def __init__(self, revision, sys_clk_freq=60e6, toolchain="trellis",
+        with_ethernet    = False,
+        with_etherbone   = False,
+        eth_ip           = "192.168.1.50",
+        eth_phy          = 0,
+        with_led_chaser  = True,
+        use_internal_osc = False,
+        sdram_rate       = "1:1",
+        with_spi_flash   = False,
+        rom              = None,
+        **kwargs):
+        platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
         # CRG --------------------------------------------------------------------------------------
-        self.crg = _CRG(platform, sys_clk_freq)
+        with_rst     = kwargs["uart_name"] not in ["serial", "crossover"] # serial_rx shared with user_btn_n.
+        with_usb_pll = kwargs.get("uart_name", None) == "usb_acm"
+        self.crg = _CRG(platform, sys_clk_freq,
+            use_internal_osc = use_internal_osc,
+            with_usb_pll     = with_usb_pll,
+            with_rst         = with_rst,
+            sdram_rate       = sdram_rate
+        )
 
-        # SoCMini ----------------------------------------------------------------------------------
-        SoCMini.__init__(self,
+        # SoCCore ----------------------------------------------------------------------------------
+        SoCCore.__init__(self,
             platform,
-            clk_freq=sys_clk_freq,
-            cpu_type="vexriscv",
-            cpu_variant="standard+debug",
-            integrated_sram_size=8*KB,
-            with_uart=True,
-            with_timer=True,
-            cpu_reset_address=0x0,
-            max_sdram_size=0x400000
+            int(sys_clk_freq),
+            ident="LiteX SoC on Colorlight",
+            **kwargs
         )
 
-        # Boot rom --------------------------------------------------------------------------------
-        if rom != None:
-            self.add_rom("rom", 0x0, 32*KB, contents=get_mem_data(rom, endianness="little"))
-        else:
-            self.add_rom("rom", 0x0, 32*KB)
+        # SDR SDRAM --------------------------------------------------------------------------------
+        if not self.integrated_main_ram_size:
+            sdrphy_cls = HalfRateGENSDRPHY if sdram_rate == "1:2" else GENSDRPHY
+            self.sdrphy = sdrphy_cls(platform.request("sdram"), sys_clk_freq)
+            sdram_cls  = M12L64322A
+            self.add_sdram("sdram",
+                phy                     = self.sdrphy,
+                module                  = sdram_cls(sys_clk_freq, sdram_rate),
+                l2_cache_size           = kwargs.get("l2_size", 8192),
+                l2_cache_full_memory_we = False,
 
-        # Etherbone --------------------------------------------------------------------------------
-        self.ethphy = LiteEthPHYRGMII(
-            clock_pads = self.platform.request("eth_clocks"),
-            pads       = self.platform.request("eth"),
-            tx_delay   = 0e-9)
-        self.add_etherbone(
-            phy          = self.ethphy,
-            ip_address   = ip_address,
-            mac_address  = mac_address,
-            data_width   = 32,
-        )
-        self.add_ethernet(
-            phy          = self.ethphy,
-            local_ip     = ip_address,
-            mac_address  = mac_address,
-            data_width   = 32,
-        )
+            )
 
-        # JTAG -------------------------------------------------------------------------------------
-        # self.add_jtagbone()
+        # Ethernet / Etherbone ---------------------------------------------------------------------
+        if with_ethernet or with_etherbone:
+            self.ethphy = LiteEthPHYRGMII(
+                clock_pads = self.platform.request("eth_clocks", eth_phy),
+                pads       = self.platform.request("eth", eth_phy),
+                tx_delay   = 0e-9)
+            if with_ethernet:
+                self.add_ethernet(phy=self.ethphy, data_width=32)
+            if with_etherbone:
+                self.add_etherbone(phy=self.ethphy, ip_address=eth_ip, data_width=32)
 
-        # SPIFlash ---------------------------------------------------------------------------------
-        self.spiflash = ECP5SPIFlash(
-            pads         = platform.request("spiflash"),
-            sys_clk_freq = sys_clk_freq,
-            spi_clk_freq = 5e6,
-        )
+        # SPI Flash --------------------------------------------------------------------------------
+        if with_spi_flash:
+            from litespi.modules import W25Q32JV as SpiFlashModule
+
+            from litespi.opcodes import SpiNorFlashOpCodes
+            self.mem_map["spiflash"] = 0x20000000
+            self.add_spi_flash(mode="1x", module=SpiFlashModule(SpiNorFlashOpCodes.READ_1_1_1), with_master=False)
+
 
 # Build --------------------------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="ColorLight FPGA board with LiteX/LiteEth")
-    parser.add_argument("--build",       action="store_true",      help="Build bitstream")
-    parser.add_argument("--load",        action="store_true",      help="Load bitstream")
-    parser.add_argument("--flash",       action="store_true",      help="Flash bitstream")
-    parser.add_argument("--rom",         default=None,             help="Bin file of firmware to load to internal ROM")
-    parser.add_argument("--ip-address",  default="192.168.10.30",  help="Ethernet IP address of the board (default: 192.168.10.30).")
-    parser.add_argument("--mac-address", default="0x726b895bc2e2", help="Ethernet MAC address of the board (defaullt: 0x726b895bc2e2).")
+    from litex.build.parser import LiteXArgumentParser
+    parser = LiteXArgumentParser(platform=colorlight_5a_75b.Platform, description="LiteX SoC on Colorlight 5A-75X.")
+    parser.add_target_argument("--revision",          default="8.2",            help="Board revision (6.0, 6.1, 7.0, 8.0, or 8.2).")
+    parser.add_target_argument("--sys-clk-freq",      default=50e6, type=float, help="System clock frequency.")
+    ethopts = parser.target_group.add_mutually_exclusive_group()
+    ethopts.add_argument("--with-ethernet",           action="store_true",      help="Enable Ethernet support.")
+    ethopts.add_argument("--with-etherbone",          action="store_true",      help="Enable Etherbone support.")
+    parser.add_target_argument("--eth-ip",            default="192.168.10.30",  help="Ethernet/Etherbone IP address.")
+    parser.add_target_argument("--eth-phy",           default=0, type=int,      help="Ethernet PHY (0 or 1).")
+    parser.add_target_argument("--use-internal-osc",  action="store_true",      help="Use internal oscillator.")
+    parser.add_target_argument("--sdram-rate",        default="1:1",            help="SDRAM Rate (1:1 Full Rate or 1:2 Half Rate).")
+    parser.add_target_argument("--with-spi-flash",    action="store_true",      help="Add SPI flash support to the SoC")
+    parser.add_target_argument("--flash",             action="store_true",      help="Flash the code to the target FPGA")
+    parser.add_target_argument("--rom",               default=None,             help="ROM default contents.")
     args = parser.parse_args()
 
-    soc     = Wyrm(ip_address=args.ip_address, mac_address=int(args.mac_address, 0), rom=args.rom)
-    builder = Builder(soc, output_dir="build", csr_csv="csr.csv")
-    builder.build(build_name="wyrm", run=args.build)
+    soc = BaseSoC(revision=args.revision,
+        sys_clk_freq     = args.sys_clk_freq,
+        toolchain        = args.toolchain,
+        with_ethernet    = args.with_ethernet,
+        with_etherbone   = args.with_etherbone,
+        eth_ip           = args.eth_ip,
+        eth_phy          = args.eth_phy,
+        use_internal_osc = args.use_internal_osc,
+        sdram_rate       = args.sdram_rate,
+        with_spi_flash   = args.with_spi_flash,
+        **parser.soc_argdict
+    )
+    builder = Builder(soc, **parser.builder_argdict)
+
+    if args.build:
+        builder.build(**parser.toolchain_argdict)
 
     if args.load:
         prog = soc.platform.create_programmer()
-        prog.load_bitstream(os.path.join(builder.gateware_dir, soc.build_name + ".svf"))
+        prog.load_bitstream(builder.get_bitstream_filename(mode="sram", ext=".svf")) # FIXME
 
     if args.flash:
         prog = soc.platform.create_programmer()
-        os.system("cp bit_to_flash.py build/gateware/")
-        os.system("cd build/gateware && ./bit_to_flash.py wyrm.bit wyrm_flash.svf")
-        prog.load_bitstream(os.path.join(builder.gateware_dir, soc.build_name + "_flash.svf"))
+        os.system("cp bit_to_flash.py build/colorlight_5a_75b/gateware/")
+        os.system("cd build/colorlight_5a_75b/gateware/ && ./bit_to_flash.py colorlight_5a_75b.bit wyrm_flash.svf")
+        prog.load_bitstream("build/colorlight_5a_75b/gateware/wyrm_flash.svf")
 
 if __name__ == "__main__":
     main()
