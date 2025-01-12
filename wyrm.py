@@ -75,12 +75,12 @@ class _CRG(LiteXModule):
 # BaseSoC ------------------------------------------------------------------------------------------
 
 class BaseSoC(SoCCore):
-    def __init__(self, revision, sys_clk_freq=60e6, toolchain="trellis",
+    def __init__(self, revision, sys_clk_freq=50e6, toolchain="trellis",
         with_ethernet    = False,
         with_etherbone   = False,
-        eth_ip           = "192.168.1.50",
+        eth_ip           = "192.168.10.30",
         eth_phy          = 0,
-        with_led_chaser  = True,
+        with_led_chaser  = False,
         use_internal_osc = False,
         sdram_rate       = "1:1",
         with_spi_flash   = False,
@@ -97,6 +97,11 @@ class BaseSoC(SoCCore):
             with_rst         = with_rst,
             sdram_rate       = sdram_rate
         )
+
+        # ROM --------------------------------------------------------------------------------------
+        if rom is not None:
+            kwargs["integrated_rom_size"] = 16*KB
+            kwargs["integrated_rom_init"] = get_mem_data(rom, endianness="little")
 
         # SoCCore ----------------------------------------------------------------------------------
         SoCCore.__init__(self,
@@ -168,6 +173,7 @@ def main():
         use_internal_osc = args.use_internal_osc,
         sdram_rate       = args.sdram_rate,
         with_spi_flash   = args.with_spi_flash,
+        rom              = args.rom,
         **parser.soc_argdict
     )
     builder = Builder(soc, **parser.builder_argdict)
