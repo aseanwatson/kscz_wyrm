@@ -1,6 +1,15 @@
-To build, you need to run with these parameters at the moment:
+To build for this problem situation:
 ```
-./wyrm.py --revision "8.2" --sys-clk-freq 50e6 --with-ethernet --eth-ip 192.168.10.30 --cpu-type vexriscv --build --flash
+# Create the bitstream
+./wyrm.py --with-ethernet --cpu-variant 'standard+debug' --csr-csv ./csr.csv --build
+# Write the bitstream to the FPGA
+./wyrm.py --flash
+# create the software
+cd software && make && cd ..
+# write the software to the main ram using the BIOS and litex_term and see the printed lines
+litex_term /dev/ttyUSBX --kernel ./software/wyrm.bin
+# try and uncomment any of the lines in `./software/main.c` like the line with `eth_init()`
+# attempt to load the code and see the lack of output
 ```
 
 # LiteX-based MCU for display via UDP packets

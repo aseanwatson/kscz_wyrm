@@ -107,7 +107,7 @@ class BaseSoC(SoCCore):
         SoCCore.__init__(self,
             platform,
             int(sys_clk_freq),
-            ident="LiteX SoC on Colorlight",
+            ident="Wyrmies",
             **kwargs
         )
 
