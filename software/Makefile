@@ -17,7 +17,7 @@ endif
 vpath %.a $(PACKAGES:%=../%)
 
 wyrm.elf: $(OBJECTS)
-	$(CC) $(LDFLAGS) -T linker.ld -N -o $@ \
+	$(CC) $(LDFLAGS) -T linker_ram.ld -N -o $@ \
 		$(OBJECTS) \
 		$(PACKAGES:%=-L$(BUILD_DIR)/software/%) \
 		-Wl,--whole-archive \

@@ -28,8 +28,8 @@ __attribute__((__used__)) int main(int i, char **c)
     printf("Hello Wyrm!\r\n");
 
     printf("\n");
-    printf("\e[1m  _        __ __  __ ____  __   __\e[0m\n");
-    printf("\e[1m | | __   / // /_/ // _  //  \\/   |\e[0m\n");
+    printf("\e[1m  _       __ __  __ ____   __   __\e[0m\n");
+    printf("\e[1m | | __  / // /_/ // __ \\ /  \\/   |\e[0m\n");
     printf("\e[1m | |/  \\/ //_  __//  ___// /\\__/| |\e[0m\n");
     printf("\e[1m |___/\\__/  /_/  /_/\\_\\ /_/     |_|\e[0m\n");
     printf("\n");
