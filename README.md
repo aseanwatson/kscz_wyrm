@@ -1,17 +1,3 @@
-To build for this problem situation:
-```
-# Create the bitstream
-./wyrm.py --with-ethernet --cpu-variant 'standard+debug' --csr-csv ./csr.csv --build
-# Write the bitstream to the FPGA
-./wyrm.py --flash
-# create the software
-cd software && make && cd ..
-# write the software to the main ram using the BIOS and litex_term and see the printed lines
-litex_term /dev/ttyUSBX --kernel ./software/wyrm.bin
-# try and uncomment any of the lines in `./software/main.c` like the line with `eth_init()`
-# attempt to load the code and see the lack of output
-```
-
 # LiteX-based MCU for display via UDP packets
 
 Getting started with LiteX on Arch linux:
@@ -26,17 +12,22 @@ Getting started with LiteX on Arch linux:
 * Install: `./litex_setup.py --init --install --config=full`
 
 Actually building:
-* Run `./wyrm.py --build` to bootstrap the environment
+* Run `./wyrm.py --build --with-ethernet` to bootstrap the environment
 * `cd software` and then `make` and then `cd ..`
-* Run `./wyrm.py --build --rom=software/demo.bin`
+* Run `./wyrm.py --build --with-ethernet --rom=software/demo.bin`
 
 Now you should have the image needed to flash onto the FPGA
 
-Connect an FT232H to your computer, and connect D0 to TCK, D1 to TDI, D2 to TDO,
-D3 to TMS, and ground to ground.
+Connect an FT232H to your computer, and connect:
+* D0 to TCK (J27)
+* D1 to TDI (J32)
+* D2 to TDO (J30)
+* D3 to TMS (J31)
+* ground to ground (J34)
 
 Run `./wyrm.py --flash` and you should see a successful connect and after some
-time the write should complete.
+time the write should complete. If you see current consumption go up to ~300mA
+you probably had a bad flash and will need to try again.
 
 Connect a 3.3V FTDI adapter to J19 -
 * `DATA_LED-` should be connected to the FTDI's RX pin
