@@ -8,6 +8,9 @@ SECTIONS
 	.text :
 	{
 		_ftext = .;
+		/* ARM (Quicklogic EOS-S3, Gowin EMCU) interrupt vector tables use section name "isr_vector" */
+		/* - such a table has to be placed at start */
+		KEEP(*(.isr_vector))
 		/* Make sure crt0 files come first, and they, and the isr */
 		/* don't get disposed of by greedy optimisation */
 		*crt0*(.text)
@@ -15,11 +18,8 @@ SECTIONS
 		KEEP(*(.text.isr))
 
 		*(.text .stub .text.* .gnu.linkonce.t.*)
-
-		FILL(0);
-		. = ALIGN(8);
 		_etext = .;
-	} > rom
+	} > main_ram
 
 	.rodata :
 	{
@@ -35,7 +35,7 @@ SECTIONS
 		FILL(0);
 		. = ALIGN(8);
 		_erodata = .;
-	} > rom
+	} > main_ram
 
 	.data :
 	{
@@ -50,7 +50,7 @@ SECTIONS
 		FILL(0);
 		. = ALIGN(8);
 		_edata = .;
-	} > sram AT > rom
+	} > sram AT > main_ram
 
 	.bss :
 	{
@@ -75,5 +75,6 @@ SECTIONS
 }
 
 PROVIDE(_fstack = ORIGIN(sram) + LENGTH(sram));
+
 PROVIDE(_fdata_rom = LOADADDR(.data));
 PROVIDE(_edata_rom = LOADADDR(.data) + SIZEOF(.data));

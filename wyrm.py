@@ -99,9 +99,11 @@ class BaseSoC(SoCCore):
         )
 
         # ROM --------------------------------------------------------------------------------------
+        kwargs["integrated_rom_size"] = 65536
         if rom is not None:
-            kwargs["integrated_rom_size"] = 16*KB
             kwargs["integrated_rom_init"] = get_mem_data(rom, endianness="little")
+
+        kwargs["integrated_sram_size"] = 8192
 
         # SoCCore ----------------------------------------------------------------------------------
         SoCCore.__init__(self,

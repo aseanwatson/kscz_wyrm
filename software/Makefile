@@ -1,4 +1,5 @@
 BUILD_DIR?=../build/colorlight_5a_75b
+#BUILD_DIR?=../build/sim
 
 include $(BUILD_DIR)/software/include/generated/variables.mak
 include $(SOC_DIRECTORY)/software/common.mak
@@ -31,8 +32,6 @@ endif
 # pull in dependency info for *existing* .o files
 -include $(OBJECTS:.o=.d)
 
-donut.o: CFLAGS   += -w
-
 VPATH = $(BIOS_DIRECTORY):$(BIOS_DIRECTORY)/cmds:$(CPU_DIRECTORY)
 
 
@@ -46,6 +45,6 @@ VPATH = $(BIOS_DIRECTORY):$(BIOS_DIRECTORY)/cmds:$(CPU_DIRECTORY)
 	$(assemble)
 
 clean:
-	$(RM) $(OBJECTS) wyrm.elf wyrm.bin *.d .*~ *~
+	$(RM) $(OBJECTS) wyrm.elf wyrm.bin wyrm.elf.map *.d .*~ *~
 
 .PHONY: all clean
