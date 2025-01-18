@@ -15,9 +15,10 @@ void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_por
 void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_port, void *data, unsigned int length)
 {
     printf("Got a UDP packet!\r\n");
+    printf("%c\r\n", ((uint8_t *)data)[0]);
 }
 
-__attribute__((__used__)) int main(int i, char **c)
+__attribute__((__used__)) int main(int argc, char **argv)
 {
 #ifdef CONFIG_CPU_HAS_INTERRUPT
     irq_setmask(0);
@@ -67,6 +68,14 @@ __attribute__((__used__)) int main(int i, char **c)
     udp_set_callback(udp_cb);
 
     printf("Waiting for packets...\r\n");
+
+    for (int i = 0; i < 16384; ++i) {
+        main_panel_en_write(0);
+        main_panel_wdat_write(0x3f3f3f);
+        main_panel_addr_write(i);
+        main_panel_en_write(1);
+    }
+
     while(1) {
         udp_service();
     }
