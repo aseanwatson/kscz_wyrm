@@ -14,8 +14,21 @@
 void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_port, void *data, unsigned int length);
 void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_port, void *data, unsigned int length)
 {
-    printf("Got a UDP packet!\r\n");
-    printf("%c\r\n", ((uint8_t *)data)[0]);
+    for (uint32_t i = 0; i < length; i += 4) {
+        main_panel_en_write(0);
+        uint32_t stuff = ((uint32_t)((uint8_t *)data)[i] << 24)
+            | ((uint32_t)((uint8_t *)data)[i+1] << 16)
+            | ((uint32_t)((uint8_t *)data)[i+2] << 8)
+            | (uint32_t)((uint8_t *)data)[i+3];
+        uint32_t addr = stuff >> 18;
+        uint32_t b = (stuff >> 12) & 0x3f;
+        uint32_t r = (stuff >> 6) & 0x3f;
+        uint32_t g = (stuff >> 0) & 0x3f;
+        main_panel_wdat_write((r << 16) | (g << 8) | b);
+        main_panel_addr_write(addr);
+        main_panel_en_write(1);
+    }
+    main_panel_en_write(0);
 }
 
 __attribute__((__used__)) int main(int argc, char **argv)
@@ -52,12 +65,6 @@ __attribute__((__used__)) int main(int argc, char **argv)
     printf("\e[1mCSR\e[0m:\t\t%d-bit data\n",
         CONFIG_CSR_DATA_WIDTH);
 
-    for (unsigned int i = 0; i < 0x1000000; ++i) {
-        if (i == 0x800000) {
-            printf("...\r\n");
-        }
-    }
-
 #ifdef CSR_ETHMAC_BASE
     eth_init();
 #endif
@@ -69,12 +76,6 @@ __attribute__((__used__)) int main(int argc, char **argv)
 
     printf("Waiting for packets...\r\n");
 
-    for (int i = 0; i < 16384; ++i) {
-        main_panel_en_write(0);
-        main_panel_wdat_write(0x3f3f3f);
-        main_panel_addr_write(i);
-        main_panel_en_write(1);
-    }
 
     while(1) {
         udp_service();

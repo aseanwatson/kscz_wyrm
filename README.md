@@ -34,3 +34,5 @@ Connect a 3.3V FTDI adapter to J19 -
 * `KEY+` should be connected to FTDI's TX pin
 
 Open up a serial terminal with baud 115200, 8 bits, no parity, 1 stop bit
+
+You can send images to a single 64x64 screen using the `send_img.py` script.
