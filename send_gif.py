@@ -8,7 +8,7 @@ from PIL import Image
 from PIL import ImageSequence
 
 UDP_IP = '192.168.10.30'
-UDP_PORT = 11223
+UDP_PORT = int(sys.argv[2])
 
 num_rows = 64
 num_cols = num_rows
@@ -19,7 +19,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 im = Image.open(sys.argv[1])
 size = 64, 64
 
-frame_time = float(sys.argv[2])
+frame_time = float(sys.argv[3])
 
 while(1):
     for frame in ImageSequence.Iterator(im):

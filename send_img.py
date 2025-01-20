@@ -1,5 +1,6 @@
 #!/bin/python3
 import socket
+import sys
 import numpy as np
 import PIL
 from PIL import Image
@@ -13,7 +14,7 @@ fbuf = np.zeros((num_rows), dtype='u4')
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-im = Image.open("some_image.jpg")
+im = Image.open(sys.argv[1])
 size = 64, 64
 im = PIL.ImageOps.pad(im, size, Image.Resampling.LANCZOS)
 

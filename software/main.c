@@ -26,7 +26,7 @@ void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_por
         uint32_t g = (stuff >> 0) & 0x3f;
         main_panel_wdat_write((r << 16) | (g << 8) | b);
         main_panel_addr_write(addr);
-        main_panel_en_write(1);
+        main_panel_en_write(dst_port & 0xf);
     }
     main_panel_en_write(0);
 }
