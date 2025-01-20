@@ -97,7 +97,7 @@ always @(posedge display_clock) begin
 end
 
 always @(posedge display_clock) begin
-    panel_oe <= 64*CHAINED-8 < cnt_x && cnt_x < 64*CHAINED+8;
+    panel_oe <= 64*CHAINED-1 < cnt_x && cnt_x < 64*CHAINED+3;
     if (state) begin
         panel_clk <= 1 < cnt_x && cnt_x < 64*CHAINED+2;
         panel_stb <= cnt_x == 64*CHAINED+2;
