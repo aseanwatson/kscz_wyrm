@@ -12,9 +12,10 @@ Getting started with LiteX on Arch linux:
 * Install: `./litex_setup.py --init --install --config=full`
 
 Actually building:
-* Run `./wyrm.py --build --with-ethernet` to bootstrap the environment
-* `cd software` and then `make` and then `cd ..`
-* Run `./wyrm.py --build --with-ethernet --rom=software/demo.bin`
+* Create a dummy firmware to bootstrap the initial build: `echo '0' > ./software/wyrm.bin`
+* Run `./wyrm.py --with-ethernet --csr-csv ./csr.csv --build --rom ./software/wyrm.bin` to bootstrap the environment
+* `cd software` and then `make clean && make` and then `cd ..`
+* Run `./wyrm.py --with-ethernet --csr-csv ./csr.csv --build --rom ./software/wyrm.bin`
 
 Now you should have the image needed to flash onto the FPGA
 
@@ -25,11 +26,12 @@ Connect an FT232H to your computer, and connect:
 * D3 to TMS (J31)
 * ground to ground (J34)
 
-Run `./wyrm.py --flash` and you should see a successful connect and after some
-time the write should complete. If you see current consumption go up to ~300mA
-you probably had a bad flash and will need to try again.
+Pick one of the following options to load the code:
+* Run `./wyrm.py --flash` and you should see a successful connect and after some
+  time the write should complete.
+* Run `openFPGALoader -c ft232 -f --freq 25000000 ./build/colorlight_5a_75b/gateware/colorlight_5a_75b.bit`
 
-Connect a 3.3V FTDI adapter to J19 -
+Connect a 3.3V FTDI TTL serial adapter to J19 -
 * `DATA_LED-` should be connected to the FTDI's RX pin
 * `KEY+` should be connected to FTDI's TX pin
 

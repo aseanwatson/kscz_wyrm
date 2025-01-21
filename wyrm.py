@@ -311,6 +311,152 @@ class BaseSoC(SoCCore):
         self.comb += s_j3_ctrl_addr.eq(self.panel_addr.storage)
         self.comb += s_j3_ctrl_wdat.eq(self.panel_wdat.storage)
 
+        s_j2_ctrl_en = Signal()
+        s_j2_ctrl_addr = Signal(16)
+        s_j2_ctrl_wdat = Signal(24)
+        s_j2r0 = Signal()
+        s_j2g0 = Signal()
+        s_j2b0 = Signal()
+        s_j2r1 = Signal()
+        s_j2g1 = Signal()
+        s_j2b1 = Signal()
+        s_j2a = Signal()
+        s_j2b = Signal()
+        s_j2c = Signal()
+        s_j2d = Signal()
+        s_j2e = Signal()
+        s_j2clk = Signal()
+        s_j2stb = Signal()
+        s_j2oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk = ClockSignal(),
+            i_ctrl_en = s_j2_ctrl_en,
+            i_ctrl_addr = s_j2_ctrl_addr,
+            i_ctrl_wdat = s_j2_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0 = s_j2r0,
+            o_panel_g0 = s_j2g0,
+            o_panel_b0 = s_j2b0,
+            o_panel_r1 = s_j2r1,
+            o_panel_g1 = s_j2g1,
+            o_panel_b1 = s_j2b1,
+            o_panel_a = s_j2a,
+            o_panel_b = s_j2b,
+            o_panel_c = s_j2c,
+            o_panel_d = s_j2d,
+            o_panel_e = s_j2e,
+            o_panel_clk = s_j2clk,
+            o_panel_stb = s_j2stb,
+            o_panel_oe = s_j2oe
+        )
+
+        platform.add_extension(_gpios)
+        j2r0 = platform.request("panel_r0", 2);
+        j2g0 = platform.request("panel_g0", 2);
+        j2b0 = platform.request("panel_b0", 2);
+        j2r1 = platform.request("panel_r1", 2);
+        j2g1 = platform.request("panel_g1", 2);
+        j2b1 = platform.request("panel_b1", 2);
+        #j2E = platform.request("panel_e", 2);
+        #j2A = platform.request("panel_a", 2);
+        #j2B = platform.request("panel_b", 2);
+        #j2C = platform.request("panel_c", 2);
+        #j2D = platform.request("panel_d", 2);
+        #j2clk = platform.request("panel_clk", 2);
+        #j2stb = platform.request("panel_stb", 2);
+        #j2oe = platform.request("panel_oe", 2);
+
+        self.comb += j2r0.eq(s_j2r0)
+        self.comb += j2g0.eq(s_j2g0)
+        self.comb += j2b0.eq(s_j2b0)
+        self.comb += j2r1.eq(s_j2r1)
+        self.comb += j2g1.eq(s_j2g1)
+        self.comb += j2b1.eq(s_j2b1)
+        #self.comb += j2A.eq(s_j2a)
+        #self.comb += j2B.eq(s_j2b)
+        #self.comb += j2C.eq(s_j2c)
+        #self.comb += j2D.eq(s_j2d)
+        #self.comb += j2E.eq(s_j2e)
+        #self.comb += j2clk.eq(s_j2clk)
+        #self.comb += j2stb.eq(s_j2stb)
+        #self.comb += j2oe.eq(s_j2oe)
+        self.comb += s_j2_ctrl_en.eq(s_shared_en[2])
+        self.comb += s_j2_ctrl_addr.eq(self.panel_addr.storage)
+        self.comb += s_j2_ctrl_wdat.eq(self.panel_wdat.storage)
+
+        s_j1_ctrl_en = Signal()
+        s_j1_ctrl_addr = Signal(16)
+        s_j1_ctrl_wdat = Signal(24)
+        s_j1r0 = Signal()
+        s_j1g0 = Signal()
+        s_j1b0 = Signal()
+        s_j1r1 = Signal()
+        s_j1g1 = Signal()
+        s_j1b1 = Signal()
+        s_j1a = Signal()
+        s_j1b = Signal()
+        s_j1c = Signal()
+        s_j1d = Signal()
+        s_j1e = Signal()
+        s_j1clk = Signal()
+        s_j1stb = Signal()
+        s_j1oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk = ClockSignal(),
+            i_ctrl_en = s_j1_ctrl_en,
+            i_ctrl_addr = s_j1_ctrl_addr,
+            i_ctrl_wdat = s_j1_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0 = s_j1r0,
+            o_panel_g0 = s_j1g0,
+            o_panel_b0 = s_j1b0,
+            o_panel_r1 = s_j1r1,
+            o_panel_g1 = s_j1g1,
+            o_panel_b1 = s_j1b1,
+            o_panel_a = s_j1a,
+            o_panel_b = s_j1b,
+            o_panel_c = s_j1c,
+            o_panel_d = s_j1d,
+            o_panel_e = s_j1e,
+            o_panel_clk = s_j1clk,
+            o_panel_stb = s_j1stb,
+            o_panel_oe = s_j1oe
+        )
+
+        platform.add_extension(_gpios)
+        j1r0 = platform.request("panel_r0", 1);
+        j1g0 = platform.request("panel_g0", 1);
+        j1b0 = platform.request("panel_b0", 1);
+        j1r1 = platform.request("panel_r1", 1);
+        j1g1 = platform.request("panel_g1", 1);
+        j1b1 = platform.request("panel_b1", 1);
+        #j1E = platform.request("panel_e", 1);
+        #j1A = platform.request("panel_a", 1);
+        #j1B = platform.request("panel_b", 1);
+        #j1C = platform.request("panel_c", 1);
+        #j1D = platform.request("panel_d", 1);
+        #j1clk = platform.request("panel_clk", 1);
+        #j1stb = platform.request("panel_stb", 1);
+        #j1oe = platform.request("panel_oe", 1);
+
+        self.comb += j1r0.eq(s_j1r0)
+        self.comb += j1g0.eq(s_j1g0)
+        self.comb += j1b0.eq(s_j1b0)
+        self.comb += j1r1.eq(s_j1r1)
+        self.comb += j1g1.eq(s_j1g1)
+        self.comb += j1b1.eq(s_j1b1)
+        #self.comb += j1A.eq(s_j1a)
+        #self.comb += j1B.eq(s_j1b)
+        #self.comb += j1C.eq(s_j1c)
+        #self.comb += j1D.eq(s_j1d)
+        #self.comb += j1E.eq(s_j1e)
+        #self.comb += j1clk.eq(s_j1clk)
+        #self.comb += j1stb.eq(s_j1stb)
+        #self.comb += j1oe.eq(s_j1oe)
+        self.comb += s_j1_ctrl_en.eq(s_shared_en[3])
+        self.comb += s_j1_ctrl_addr.eq(self.panel_addr.storage)
+        self.comb += s_j1_ctrl_wdat.eq(self.panel_wdat.storage)
+
         # CRG --------------------------------------------------------------------------------------
         with_rst     = kwargs["uart_name"] not in ["serial", "crossover"] # serial_rx shared with user_btn_n.
         with_usb_pll = kwargs.get("uart_name", None) == "usb_acm"
@@ -322,7 +468,7 @@ class BaseSoC(SoCCore):
         )
 
         # ROM --------------------------------------------------------------------------------------
-        kwargs["integrated_rom_size"] = 32768
+        kwargs["integrated_rom_size"] = 12288
         if rom is not None:
             kwargs["integrated_rom_init"] = get_mem_data(rom, endianness="little")
 
