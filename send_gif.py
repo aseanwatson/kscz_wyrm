@@ -12,7 +12,7 @@ UDP_PORT = int(sys.argv[2])
 
 num_rows = 64
 num_cols = num_rows
-fbuf = np.zeros((num_rows), dtype='u4')
+fbuf = np.zeros((num_rows*4), dtype='u4')
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -34,11 +34,12 @@ while(1):
                 g = cast[y][x][0].item()
                 b = cast[y][x][1].item()
         
-                fbuf[x] = socket.htonl((addr << 18)     | (((int(r))&0xFC) << 10)
-                                                        | (((int(g))&0xFC) << 4)
-                                                        | (((int(b))&0xFC) >> 2))
+                fbuf[x+(num_cols*(y%4))] = socket.htonl((addr << 18) | (((int(r))&0xFC) << 10)
+                                                                     | (((int(g))&0xFC) << 4)
+                                                                     | (((int(b))&0xFC) >> 2))
         
-            s.sendto(fbuf.tobytes(), (UDP_IP, UDP_PORT))
+            if (y % 4) == 3:
+                s.sendto(fbuf.tobytes(), (UDP_IP, UDP_PORT))
         time.sleep(frame_time)
 
 exit()
