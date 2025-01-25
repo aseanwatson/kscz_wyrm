@@ -6,7 +6,7 @@ import PIL
 from PIL import Image
 
 UDP_IP = '192.168.10.30'
-UDP_PORT = int(sys.argv[2])
+UDP_PORT = 1234
 
 num_rows = 64
 num_cols = num_rows
@@ -33,6 +33,10 @@ for y in range(num_rows):
                                                              | (((int(b))&0xFC) >> 2))
 
     if (y % 4) == 3:
-        s.sendto(fbuf.tobytes(), (UDP_IP, UDP_PORT))
+        tosend = bytearray()
+        tosend.append(int(sys.argv[2]))
+        tosend.append(0)
+        tosend.extend(fbuf.tobytes())
+        s.sendto(tosend, (UDP_IP, UDP_PORT))
 
 exit()

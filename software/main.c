@@ -8,25 +8,24 @@
 #include <irq.h>
 #include <libbase/uart.h>
 #include <libbase/console.h>
+#include <libliteeth/inet.h>
 #include <libliteeth/udp.h>
 #include <generated/csr.h>
 
 void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_port, void *data, unsigned int length);
 void udp_cb(unsigned int src_ip, unsigned short src_port, unsigned short dst_port, void *data, unsigned int length)
 {
-    for (uint32_t i = 0; i < length; i += 4) {
+    uint8_t *buf = (uint8_t *)data;
+    for (uint32_t i = 2; i < length; i += 4) {
         main_panel_en_write(0);
-        uint32_t stuff = ((uint32_t)((uint8_t *)data)[i] << 24)
-            | ((uint32_t)((uint8_t *)data)[i+1] << 16)
-            | ((uint32_t)((uint8_t *)data)[i+2] << 8)
-            | (uint32_t)((uint8_t *)data)[i+3];
-        uint32_t addr = stuff >> 18;
-        uint32_t b = (stuff >> 12) & 0x3f;
-        uint32_t r = (stuff >> 6) & 0x3f;
-        uint32_t g = (stuff >> 0) & 0x3f;
-        main_panel_wdat_write((r << 16) | (g << 8) | b);
+        const uint32_t stuff = ntohl(*((uint32_t *)(&(buf[i]))));
+        const uint32_t addr = stuff >> 18;
+        const uint32_t b = (stuff << 4) & (0x3f << 16);
+        const uint32_t r = (stuff << 2) & (0x3f << 8);
+        const uint32_t g = stuff & 0x3f;
+        main_panel_wdat_write(r | g | b);
         main_panel_addr_write(addr);
-        main_panel_en_write(dst_port & 0xf);
+        main_panel_en_write(buf[0]);
     }
     main_panel_en_write(0);
 }

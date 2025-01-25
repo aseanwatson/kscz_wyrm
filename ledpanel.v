@@ -24,7 +24,7 @@ module ledpanel (
 );
 
 parameter integer INPUT_DEPTH          = 6;    // bits of color before gamma correction
-parameter integer COLOR_DEPTH          = 7;    // bits of color after gamma correction
+parameter integer COLOR_DEPTH          = 6;    // bits of color after gamma correction
 parameter integer CHAINED              = 1; // number of panels in chain
 
 localparam integer SIZE_BITS = $clog2(CHAINED);
@@ -42,7 +42,7 @@ initial begin:video_mem_init
     panel_d <= 0;
     panel_e <= 0;
 
-    $readmemh("6bit_to_7bit_gamma.mem",gamma_mem);
+    $readmemh("6bit_to_6bit_gamma.mem",gamma_mem);
 
     $readmemh("red.mem",video_mem_r);
     $readmemh("green.mem",video_mem_g);
