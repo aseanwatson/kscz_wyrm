@@ -19,6 +19,8 @@ from litedram.modules import M12L64322A
 from litedram.phy import GENSDRPHY, HalfRateGENSDRPHY
 
 from liteeth.phy.ecp5rgmii import LiteEthPHYRGMII
+from liteeth.core import LiteEthUDPIPCore
+from liteeth.frontend.stream import LiteEthUDPStreamer
 from litex.build.generic_platform import *
 
 _gpios = [
@@ -155,6 +157,9 @@ class BaseSoC(SoCMini):
 
         # LED Panel --------------------------------------------------------------------------------
         s_shared_en = Signal(4)
+        s_shared_addr = Signal(16)
+        s_shared_wdat = Signal(24)
+
         s_j4_ctrl_en = Signal()
         s_j4_ctrl_addr = Signal(16)
         s_j4_ctrl_wdat = Signal(24)
@@ -211,11 +216,12 @@ class BaseSoC(SoCMini):
         j4stb = platform.request("panel_stb", 4);
         j4oe = platform.request("panel_oe", 4);
 
-        self.panel_en = CSRStorage(size=4)
-        self.panel_addr = CSRStorage(size=16)
-        self.panel_wdat = CSRStorage(size=24)
+        # FIXME
+        #self.panel_en = CSRStorage(size=4)
+        #self.panel_addr = CSRStorage(size=16)
+        #self.panel_wdat = CSRStorage(size=24)
 
-        self.comb += s_shared_en.eq(self.panel_en.storage)
+        #self.comb += s_shared_en.eq(self.panel_en.storage)
 
         self.comb += j4r0.eq(s_j4r0)
         self.comb += j4g0.eq(s_j4g0)
@@ -232,8 +238,8 @@ class BaseSoC(SoCMini):
         self.comb += j4stb.eq(s_j4stb)
         self.comb += j4oe.eq(s_j4oe)
         self.comb += s_j4_ctrl_en.eq(s_shared_en[0])
-        self.comb += s_j4_ctrl_addr.eq(self.panel_addr.storage)
-        self.comb += s_j4_ctrl_wdat.eq(self.panel_wdat.storage)
+        self.comb += s_j4_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j4_ctrl_wdat.eq(s_shared_wdat)
 
         s_j3_ctrl_en = Signal()
         s_j3_ctrl_addr = Signal(16)
@@ -305,8 +311,8 @@ class BaseSoC(SoCMini):
         #self.comb += j3stb.eq(s_j3stb)
         #self.comb += j3oe.eq(s_j3oe)
         self.comb += s_j3_ctrl_en.eq(s_shared_en[1])
-        self.comb += s_j3_ctrl_addr.eq(self.panel_addr.storage)
-        self.comb += s_j3_ctrl_wdat.eq(self.panel_wdat.storage)
+        self.comb += s_j3_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j3_ctrl_wdat.eq(s_shared_wdat)
 
         s_j2_ctrl_en = Signal()
         s_j2_ctrl_addr = Signal(16)
@@ -378,8 +384,8 @@ class BaseSoC(SoCMini):
         #self.comb += j2stb.eq(s_j2stb)
         #self.comb += j2oe.eq(s_j2oe)
         self.comb += s_j2_ctrl_en.eq(s_shared_en[2])
-        self.comb += s_j2_ctrl_addr.eq(self.panel_addr.storage)
-        self.comb += s_j2_ctrl_wdat.eq(self.panel_wdat.storage)
+        self.comb += s_j2_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j2_ctrl_wdat.eq(s_shared_wdat)
 
         s_j1_ctrl_en = Signal()
         s_j1_ctrl_addr = Signal(16)
@@ -451,8 +457,8 @@ class BaseSoC(SoCMini):
         #self.comb += j1stb.eq(s_j1stb)
         #self.comb += j1oe.eq(s_j1oe)
         self.comb += s_j1_ctrl_en.eq(s_shared_en[3])
-        self.comb += s_j1_ctrl_addr.eq(self.panel_addr.storage)
-        self.comb += s_j1_ctrl_wdat.eq(self.panel_wdat.storage)
+        self.comb += s_j1_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j1_ctrl_wdat.eq(s_shared_wdat)
 
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, sys_clk_freq,
@@ -471,11 +477,11 @@ class BaseSoC(SoCMini):
         )
 
         # LiteEth UDP/IP ---------------------------------------------------------------------------
-        self.submodules.ethphy = LiteEthPHYMII(
-            clock_pads = self.platform.request("eth_clocks"),
-            pads       = self.platform.request("eth")
-		)
-        self.submodules.ethcore = LiteEthUDPIPCore(
+        self.ethphy = LiteEthPHYRGMII(
+            clock_pads = self.platform.request("eth_clocks", eth_phy),
+            pads       = self.platform.request("eth", eth_phy),
+            tx_delay   = 0e-9)
+        self.submodules.ethcore = udp_core = LiteEthUDPIPCore(
             phy         = self.ethphy,
             mac_address = 0x726b895bc2e2,
             ip_address  = eth_ip,
@@ -483,11 +489,49 @@ class BaseSoC(SoCMini):
         )
 
         # UDP Streamer -----------------------------------------------------------------------------
-        self.submodules.udp_streamer = udp_streamer = LiteEthUDPStreamer(self.ethcore.udp,
-            ip_address = eth_ip,
-            udp_port   = 2000,
-            data_width = 8
+        #self.submodules.udp_streamer = udp_streamer = LiteEthUDPStreamer(self.ethcore.udp,
+        #    ip_address = eth_ip,
+        #    udp_port   = 2000,
+        #    data_width = 8
+        #)
+
+        s_udp_reset = Signal()
+        s_udp_source_valid = Signal()
+        s_udp_source_last = Signal()
+        s_udp_source_ready = Signal()
+        s_udp_source_src_port = Signal(16)
+        s_udp_source_dst_port = Signal(16)
+        s_udp_source_ip_address = Signal(32)
+        s_udp_source_length = Signal(16)
+        s_udp_source_data = Signal(32)
+        s_udp_source_error = Signal(4)
+        self.specials += Instance("udp_panel_writer",
+            i_clk = ClockSignal(),
+            i_reset = s_udp_reset,
+            i_udp_source_valid = s_udp_source_valid,
+            i_udp_source_last = s_udp_source_last,
+            o_udp_source_ready = s_udp_source_ready,
+            i_udp_source_src_port = s_udp_source_src_port,
+            i_udp_source_dst_port = s_udp_source_dst_port,
+            i_udp_source_ip_address = s_udp_source_ip_address,
+            i_udp_source_length = s_udp_source_length,
+            i_udp_source_data = s_udp_source_data,
+            i_udp_source_error = s_udp_source_error,
+            o_ctrl_en = s_shared_en,
+            o_ctrl_addr = s_shared_addr,
+            o_ctrl_wdat = s_shared_wdat,
         )
+        platform.add_source("udp_panel_writer.v")
+
+        self.comb += s_udp_source_valid.eq(udp_core.udp.rx.source.valid)
+        self.comb += s_udp_source_last.eq(udp_core.udp.rx.source.last)
+        self.comb += udp_core.udp.rx.source.ready.eq(s_udp_source_ready)
+        self.comb += s_udp_source_src_port.eq(udp_core.udp.rx.source.param.src_port)
+        self.comb += s_udp_source_dst_port.eq(udp_core.udp.rx.source.param.dst_port)
+        self.comb += s_udp_source_ip_address.eq(udp_core.udp.rx.source.param.ip_address)
+        self.comb += s_udp_source_length.eq(udp_core.udp.rx.source.param.length)
+        self.comb += s_udp_source_data.eq(udp_core.udp.rx.source.data)
+        self.comb += s_udp_source_error.eq(udp_core.udp.rx.source.error)
 
         # Ethernet / Etherbone ---------------------------------------------------------------------
         # self.ethphy = LiteEthPHYRGMII(

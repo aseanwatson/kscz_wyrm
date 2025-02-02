@@ -1,6 +1,6 @@
 module udp_panel_writer
                       #(parameter PORT_MSB = 16'h66)
-                       (input  wire          clock
+                       (input  wire          clk,
                         input  wire          reset,
                         input  wire          udp_source_valid,
                         input  wire          udp_source_last,
@@ -13,14 +13,11 @@ module udp_panel_writer
                         input  wire  [3:0]   udp_source_error,
 
                         output reg [5:0]     ctrl_en,
-                        output wire [3:0]    ctrl_wr,
                         output reg [15:0]    ctrl_addr,
                         output reg [23:0]    ctrl_wdat,
 
                         output reg led_reg
 );
-
-    assign ctrl_wr = 4'b0111; // always write RGB
 
     localparam STATE_WAIT_PACKET = 2'b01, STATE_READ_DATA = 2'b10;
 
@@ -33,7 +30,7 @@ module udp_panel_writer
     reg [1:0] byte_count;
     initial udp_source_ready <= 1'b0;
 
-    always @(posedge clock) begin
+    always @(posedge clk) begin
         if (reset) begin
             udp_source_ready <= 1'b0;
             udp_state <= STATE_WAIT_PACKET;

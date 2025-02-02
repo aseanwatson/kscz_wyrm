@@ -8,7 +8,7 @@ from PIL import Image
 from PIL import ImageSequence
 
 UDP_IP = '192.168.10.30'
-UDP_PORT = 1234
+UDP_PORT = int(sys.argv[2])
 
 num_rows = 64
 num_cols = num_rows
@@ -40,8 +40,8 @@ while(1):
         
             if (y % 4) == 3:
                 tosend = bytearray()
-                tosend.append(int(sys.argv[2]))
-                tosend.append(0)
+                #tosend.append(int(sys.argv[2]))
+                #tosend.append(0)
                 tosend.extend(fbuf.tobytes())
                 s.sendto(tosend, (UDP_IP, UDP_PORT))
         time.sleep(frame_time)
