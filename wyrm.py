@@ -146,7 +146,7 @@ class BaseSoC(SoCCore):
     def __init__(self, revision, sys_clk_freq=50e6, toolchain="trellis",
         with_ethernet    = False,
         with_etherbone   = False,
-        eth_ip           = "192.168.10.30",
+        eth_ip           = "192.168.1.91",
         eth_phy          = 0,
         use_internal_osc = False,
         sdram_rate       = "1:1",
@@ -526,7 +526,7 @@ def main():
     ethopts = parser.target_group.add_mutually_exclusive_group()
     ethopts.add_argument("--with-ethernet",           action="store_true",      help="Enable Ethernet support.")
     ethopts.add_argument("--with-etherbone",          action="store_true",      help="Enable Etherbone support.")
-    parser.add_target_argument("--eth-ip",            default="192.168.10.30",  help="Ethernet/Etherbone IP address.")
+    parser.add_target_argument("--eth-ip",            default="192.168.1.91",   help="Ethernet/Etherbone IP address.")
     parser.add_target_argument("--eth-phy",           default=0, type=int,      help="Ethernet PHY (0 or 1).")
     parser.add_target_argument("--use-internal-osc",  action="store_true",      help="Use internal oscillator.")
     parser.add_target_argument("--sdram-rate",        default="1:1",            help="SDRAM Rate (1:1 Full Rate or 1:2 Half Rate).")

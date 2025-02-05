@@ -5,7 +5,7 @@ import time
 import numpy as np
 import cv2
 
-UDP_IP = '192.168.10.30'
+UDP_IP = '192.168.1.90'
 UDP_PORT = 1234
 
 # Detect endianness and create vectorized htonl

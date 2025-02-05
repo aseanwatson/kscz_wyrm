@@ -5,7 +5,7 @@ import time
 import numpy as np
 import cv2
 
-UDP_IP = '192.168.10.30'
+UDP_IP = '192.168.1.90'
 UDP_PORT = 1234
 
 # We send 4 lines at a time, and we only access one 64x64 segment at a time

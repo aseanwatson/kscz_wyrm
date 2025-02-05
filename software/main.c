@@ -69,7 +69,7 @@ __attribute__((__used__)) int main(int argc, char **argv)
 #endif
 
     unsigned char mac[] = {0x72, 0x6b, 0x89, 0x5b, 0xc2, 0xe2};
-    udp_start(mac, IPTOINT(192, 168, 10, 30));
+    udp_start(mac, IPTOINT(192, 168, 1, 90));
 
     udp_set_callback(udp_cb);
 

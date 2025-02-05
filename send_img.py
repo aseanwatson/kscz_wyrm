@@ -5,7 +5,7 @@ import numpy as np
 import PIL
 from PIL import Image
 
-UDP_IP = '192.168.10.30'
+UDP_IP = '192.168.1.90'
 UDP_PORT = 1234
 
 num_rows = 64
