@@ -148,7 +148,6 @@ class BaseSoC(SoCCore):
         with_etherbone   = False,
         eth_ip           = "192.168.10.30",
         eth_phy          = 0,
-        with_led_chaser  = False,
         use_internal_osc = False,
         sdram_rate       = "1:1",
         with_spi_flash   = False,
