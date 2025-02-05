@@ -146,6 +146,7 @@ class BaseSoC(SoCCore):
     def __init__(self, revision, sys_clk_freq=50e6, toolchain="trellis",
         with_ethernet    = False,
         with_etherbone   = False,
+        with_litescope   = False,
         eth_ip           = "192.168.1.91",
         eth_phy          = 0,
         use_internal_osc = False,
@@ -278,15 +279,15 @@ class BaseSoC(SoCCore):
             )
 
         # Ethernet / Etherbone ---------------------------------------------------------------------
-        if with_ethernet or with_etherbone:
+        if with_ethernet or with_etherbone or with_litescope:
             self.ethphy = LiteEthPHYRGMII(
                 clock_pads = self.platform.request("eth_clocks", eth_phy),
                 pads       = self.platform.request("eth", eth_phy),
                 tx_delay   = 0e-9)
-            if with_ethernet:
-                self.add_ethernet(phy=self.ethphy, data_width=32)
-            if with_etherbone:
-                self.add_etherbone(phy=self.ethphy, ip_address=eth_ip, data_width=32)
+        if with_ethernet:
+            self.add_ethernet(phy=self.ethphy, data_width=32)
+        if with_etherbone or with_litescope:
+            self.add_etherbone(phy=self.ethphy, ip_address=eth_ip, data_width=32, with_ethmac=True)
 
         # SPI Flash --------------------------------------------------------------------------------
         if with_spi_flash:
@@ -296,6 +297,36 @@ class BaseSoC(SoCCore):
             self.mem_map["spiflash"] = 0x20000000
             self.add_spi_flash(mode="1x", module=SpiFlashModule(SpiNorFlashOpCodes.READ_1_1_1), with_master=False)
 
+        if with_litescope:
+            analyzer_signals = [
+                # IBus (could also just added as self.cpu.ibus)
+                self.cpu.ibus.stb,
+                self.cpu.ibus.cyc,
+                self.cpu.ibus.adr,
+                self.cpu.ibus.we,
+                self.cpu.ibus.ack,
+                self.cpu.ibus.sel,
+                self.cpu.ibus.dat_w,
+                self.cpu.ibus.dat_r,
+
+                # DBus (could also just added as self.cpu.dbus)
+                self.cpu.dbus.stb,
+                self.cpu.dbus.cyc,
+                self.cpu.dbus.adr,
+                self.cpu.dbus.we,
+                self.cpu.dbus.ack,
+                self.cpu.dbus.sel,
+                self.cpu.dbus.dat_w,
+                self.cpu.dbus.dat_r,
+            ]
+
+            from litescope import LiteScopeAnalyzer
+            self.submodules.analyzer = LiteScopeAnalyzer(analyzer_signals,
+                depth        = 512,
+                clock_domain = "sys",
+                samplerate   = sys_clk_freq,
+                csr_csv      = "analyzer.csv"
+            )
 
 # Build --------------------------------------------------------------------------------------------
 
@@ -307,6 +338,7 @@ def main():
     ethopts = parser.target_group.add_mutually_exclusive_group()
     ethopts.add_argument("--with-ethernet",           action="store_true",      help="Enable Ethernet support.")
     ethopts.add_argument("--with-etherbone",          action="store_true",      help="Enable Etherbone support.")
+    ethopts.add_argument("--with-litescope",          action="store_true",      help="Enable Etherbone support.")
     parser.add_target_argument("--eth-ip",            default="192.168.1.91",   help="Ethernet/Etherbone IP address.")
     parser.add_target_argument("--eth-phy",           default=0, type=int,      help="Ethernet PHY (0 or 1).")
     parser.add_target_argument("--use-internal-osc",  action="store_true",      help="Use internal oscillator.")
@@ -321,6 +353,7 @@ def main():
         toolchain        = args.toolchain,
         with_ethernet    = args.with_ethernet,
         with_etherbone   = args.with_etherbone,
+        with_litescope   = args.with_litescope,
         eth_ip           = args.eth_ip,
         eth_phy          = args.eth_phy,
         use_internal_osc = args.use_internal_osc,
