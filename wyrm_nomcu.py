@@ -23,6 +23,8 @@ from liteeth.core import LiteEthUDPIPCore
 from liteeth.frontend.stream import LiteEthUDPStreamer
 from litex.build.generic_platform import *
 
+from litescope import LiteScopeAnalyzer
+
 _gpios = [
     ("panel_r0",  1, Pins("j1:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  1, Pins("j1:1"), IOStandard("LVCMOS33")),
@@ -112,7 +114,7 @@ class _CRG(LiteXModule):
                                 o_OSC = clk)
             clk_freq = 310e6/div
 
-        rst_n = 1 if not with_rst else platform.request("user_btn_n", 0)
+        self.rst_n = rst_n = 1 if not with_rst else platform.request("user_btn_n", 0)
 
         # PLL
         self.pll = pll = ECP5PLL()
@@ -461,39 +463,53 @@ class BaseSoC(SoCMini):
         self.comb += s_j1_ctrl_wdat.eq(s_shared_wdat)
 
         # CRG --------------------------------------------------------------------------------------
-        self.crg = _CRG(platform, sys_clk_freq,
+        self.crg = _CRG(platform, int(sys_clk_freq),
             use_internal_osc = use_internal_osc,
             with_usb_pll     = False,
-            with_rst         = True,
+            with_rst         = False,
             sdram_rate       = sdram_rate
         )
 
         # SoCMini ----------------------------------------------------------------------------------
         SoCMini.__init__(self,
             platform,
-            int(sys_clk_freq),
-            ident="Wyrmies",
-            **kwargs
+            clk_freq=int(sys_clk_freq),
         )
 
         # LiteEth UDP/IP ---------------------------------------------------------------------------
         self.ethphy = LiteEthPHYRGMII(
             clock_pads = self.platform.request("eth_clocks", eth_phy),
             pads       = self.platform.request("eth", eth_phy),
-            tx_delay   = 0e-9)
-        self.submodules.ethcore = udp_core = LiteEthUDPIPCore(
-            phy         = self.ethphy,
-            mac_address = 0x726b895bc2e2,
-            ip_address  = eth_ip,
-            clk_freq    = sys_clk_freq
+            tx_delay   = 0e-9,
         )
+        self.add_etherbone(
+            phy         = self.ethphy,
+            ip_address  = "192.168.10.31",
+            data_width  = 32,
+            #mac_address = 0x726b895bc2e2,
+            #with_ethmac = True,
+        )
+        udp_core = self.ethcore_etherbone
+        #self.submodules.ethcore = udp_core = LiteEthUDPIPCore(
+        #    self.ethphy,
+        #    mac_address = 0x726b895bc2e2,
+        #    ip_address  = eth_ip,
+        #    clk_freq    = int(sys_clk_freq),
+        #    #interface   = "crossbar",
+        #)
+        #self.add_ethernet(phy=self.ethphy, data_width=32)
 
         # UDP Streamer -----------------------------------------------------------------------------
-        #self.submodules.udp_streamer = udp_streamer = LiteEthUDPStreamer(self.ethcore.udp,
-        #    ip_address = eth_ip,
-        #    udp_port   = 2000,
-        #    data_width = 8
+        #self.submodules.udp_streamer = udp_streamer = LiteEthUDPStreamer(
+        #    udp_core,
+        #    ip_address = "192.168.10.197",
+        #    udp_port   = 26127,
+        #    #data_width = 8,
         #)
+
+        ##udp_port = self.ethcore.udp.crossbar.get_port(2025, dw=8, cd="sys")
+
+        udp_rx = udp_core.udp.rx.source;
 
         s_udp_reset = Signal()
         s_udp_source_valid = Signal()
@@ -505,6 +521,7 @@ class BaseSoC(SoCMini):
         s_udp_source_length = Signal(16)
         s_udp_source_data = Signal(32)
         s_udp_source_error = Signal(4)
+        s_udp_led = Signal()
         self.specials += Instance("udp_panel_writer",
             i_clk = ClockSignal(),
             i_reset = s_udp_reset,
@@ -520,18 +537,27 @@ class BaseSoC(SoCMini):
             o_ctrl_en = s_shared_en,
             o_ctrl_addr = s_shared_addr,
             o_ctrl_wdat = s_shared_wdat,
+            o_led_reg = s_udp_led,
         )
         platform.add_source("udp_panel_writer.v")
 
-        self.comb += s_udp_source_valid.eq(udp_core.udp.rx.source.valid)
-        self.comb += s_udp_source_last.eq(udp_core.udp.rx.source.last)
-        self.comb += udp_core.udp.rx.source.ready.eq(s_udp_source_ready)
-        self.comb += s_udp_source_src_port.eq(udp_core.udp.rx.source.param.src_port)
-        self.comb += s_udp_source_dst_port.eq(udp_core.udp.rx.source.param.dst_port)
-        self.comb += s_udp_source_ip_address.eq(udp_core.udp.rx.source.param.ip_address)
-        self.comb += s_udp_source_length.eq(udp_core.udp.rx.source.param.length)
-        self.comb += s_udp_source_data.eq(udp_core.udp.rx.source.data)
-        self.comb += s_udp_source_error.eq(udp_core.udp.rx.source.error)
+        self.comb += s_udp_reset.eq(0)
+        self.sync += s_udp_source_valid.eq(udp_rx.valid)
+        self.sync += s_udp_source_last.eq(udp_rx.last)
+        #self.comb += udp_streamer.source.ready.eq(s_udp_source_ready)
+        self.sync += s_udp_source_dst_port.eq(udp_rx.param.dst_port)
+        self.sync += s_udp_source_src_port.eq(15)
+        #self.comb += s_udp_source_ip_address.eq(
+        #self.comb += s_udp_source_length.eq(
+        self.sync += s_udp_source_data.eq(udp_rx.payload.data)
+        self.sync += s_udp_source_error.eq(udp_rx.payload.error)
+
+
+        s_test_port = Signal();
+        self.comb += s_test_port.eq((udp_core.udp.rx.source.param.dst_port[15] == 1) & udp_core.udp.rx.source.valid);
+        led = platform.request("user_led_n", 0)
+        self.comb += led.eq(s_test_port)
+        #self.comb += udp_streamer.source.ready.eq(1)
 
         # Ethernet / Etherbone ---------------------------------------------------------------------
         # self.ethphy = LiteEthPHYRGMII(
@@ -539,6 +565,33 @@ class BaseSoC(SoCMini):
         #     pads       = self.platform.request("eth", eth_phy),
         #     tx_delay   = 0e-9)
         # self.add_ethernet(phy=self.ethphy, , data_width=32)
+
+        analyzer_signals = [
+            s_udp_reset,
+            s_udp_source_valid,
+            s_udp_source_last,
+            s_udp_source_ready,
+            s_udp_source_src_port,
+            s_udp_source_dst_port,
+            s_udp_source_ip_address,
+            s_udp_source_length,
+            s_udp_source_data,
+            s_udp_source_error,
+            s_udp_led,
+            udp_core.udp.rx.source,
+            s_test_port,
+            s_shared_wdat,
+            s_shared_addr,
+            s_shared_en
+        ]
+
+        #analyzer_signals = []
+        self.submodules.analyzer = LiteScopeAnalyzer(analyzer_signals,
+            depth        = 1024,
+            clock_domain = "sys",
+            samplerate   = int(sys_clk_freq),
+            csr_csv      = "analyzer.csv"
+        )
 
         # SPI Flash --------------------------------------------------------------------------------
         if with_spi_flash:
