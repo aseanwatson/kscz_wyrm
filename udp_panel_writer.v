@@ -33,10 +33,10 @@ always @(posedge clk) begin
     end else begin
         if (udp_source_valid & (udp_source_dst_port[15:8] == PORT_MSB)) begin
             ctrl_en          <= udp_source_dst_port[5:0];
-            ctrl_addr        <= udp_source_data[31:18];
-            ctrl_wdat[23:16] <= udp_source_data[17:12];
-            ctrl_wdat[15:8]  <= udp_source_data[11:6];
-            ctrl_wdat[7:0]   <= udp_source_data[5:0];
+            ctrl_addr        <= {udp_source_data[7:0], udp_source_data[15:10]};
+            ctrl_wdat[23:16] <= {udp_source_data[9:8], udp_source_data[23:20]};
+            ctrl_wdat[15:8]  <= {udp_source_data[19:16], udp_source_data[31:30]};
+            ctrl_wdat[7:0]   <= udp_source_data[29:24];
         end else begin
             ctrl_en <= 6'b0;
         end

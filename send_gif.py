@@ -40,7 +40,7 @@ while(1):
         
             if (y % 4) == 3:
                 tosend = bytearray()
-                tosend.append(int(sys.argv[2]))
+                #tosend.append(int(sys.argv[2]))
                 #tosend.append(0)
                 tosend.extend(fbuf.tobytes())
                 s.sendto(tosend, (UDP_IP, UDP_PORT))
