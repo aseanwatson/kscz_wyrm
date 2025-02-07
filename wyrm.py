@@ -22,20 +22,24 @@ from liteeth.phy.ecp5rgmii import LiteEthPHYRGMII
 from litex.build.generic_platform import *
 
 _gpios = [
+    ("panel_shared_output", None,
+        Subsignal("e", Pins("j1:7")),
+        Subsignal("a", Pins("j1:8")),
+        Subsignal("b", Pins("j1:9")),
+        Subsignal("c", Pins("j1:10")),
+        Subsignal("d", Pins("j1:11")),
+        Subsignal("clk", Pins("j1:12")),
+        Subsignal("stb", Pins("j1:13")),
+        Subsignal("oe", Pins("j1:14")),
+        IOStandard("LVCMOS33")
+        ),
+
     ("panel_r0",  1, Pins("j1:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  1, Pins("j1:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  1, Pins("j1:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  1, Pins("j1:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  1, Pins("j1:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  1, Pins("j1:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   1, Pins("j1:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   1, Pins("j1:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   1, Pins("j1:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   1, Pins("j1:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   1, Pins("j1:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 1, Pins("j1:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 1, Pins("j1:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  1, Pins("j1:14"), IOStandard("LVCMOS33")),
 
     ("panel_r0",  2, Pins("j2:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  2, Pins("j2:1"), IOStandard("LVCMOS33")),
@@ -43,14 +47,6 @@ _gpios = [
     ("panel_r1",  2, Pins("j2:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  2, Pins("j2:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  2, Pins("j2:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   2, Pins("j2:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   2, Pins("j2:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   2, Pins("j2:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   2, Pins("j2:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   2, Pins("j2:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 2, Pins("j2:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 2, Pins("j2:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  2, Pins("j2:14"), IOStandard("LVCMOS33")),
 
     ("panel_r0",  3, Pins("j3:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  3, Pins("j3:1"), IOStandard("LVCMOS33")),
@@ -58,14 +54,6 @@ _gpios = [
     ("panel_r1",  3, Pins("j3:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  3, Pins("j3:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  3, Pins("j3:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   3, Pins("j3:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   3, Pins("j3:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   3, Pins("j3:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   3, Pins("j3:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   3, Pins("j3:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 3, Pins("j3:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 3, Pins("j3:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  3, Pins("j3:14"), IOStandard("LVCMOS33")),
 
     ("panel_r0",  4, Pins("j4:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  4, Pins("j4:1"), IOStandard("LVCMOS33")),
@@ -73,14 +61,6 @@ _gpios = [
     ("panel_r1",  4, Pins("j4:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  4, Pins("j4:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  4, Pins("j4:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   4, Pins("j4:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   4, Pins("j4:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   4, Pins("j4:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   4, Pins("j4:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   4, Pins("j4:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 4, Pins("j4:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 4, Pins("j4:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  4, Pins("j4:14"), IOStandard("LVCMOS33")),
 ]
 
 # CRG ----------------------------------------------------------------------------------------------
@@ -156,6 +136,10 @@ class BaseSoC(SoCCore):
         **kwargs):
         platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
+        platform.add_source("ledpanel.v")
+
+        platform.add_extension(_gpios)
+
         # LED Panel --------------------------------------------------------------------------------
         s_shared_en = Signal(4)
         s_j4_ctrl_en = Signal()
@@ -196,23 +180,21 @@ class BaseSoC(SoCCore):
             o_panel_stb = s_j4stb,
             o_panel_oe = s_j4oe
         )
-        platform.add_source("ledpanel.v")
-
-        platform.add_extension(_gpios)
         j4r0 = platform.request("panel_r0", 4);
         j4g0 = platform.request("panel_g0", 4);
         j4b0 = platform.request("panel_b0", 4);
         j4r1 = platform.request("panel_r1", 4);
         j4g1 = platform.request("panel_g1", 4);
         j4b1 = platform.request("panel_b1", 4);
-        j4E = platform.request("panel_e", 4);
-        j4A = platform.request("panel_a", 4);
-        j4B = platform.request("panel_b", 4);
-        j4C = platform.request("panel_c", 4);
-        j4D = platform.request("panel_d", 4);
-        j4clk = platform.request("panel_clk", 4);
-        j4stb = platform.request("panel_stb", 4);
-        j4oe = platform.request("panel_oe", 4);
+        panel_shared_output = platform.request("panel_shared_output")
+        j4A = panel_shared_output.a
+        j4B = panel_shared_output.b
+        j4C = panel_shared_output.c
+        j4D = panel_shared_output.d
+        j4E = panel_shared_output.e
+        j4clk = panel_shared_output.clk
+        j4stb = panel_shared_output.stb
+        j4oe = panel_shared_output.oe
 
         self.panel_en = CSRStorage(size=4)
         self.panel_addr = CSRStorage(size=16)
@@ -277,21 +259,12 @@ class BaseSoC(SoCCore):
             o_panel_oe = s_j3oe
         )
 
-        platform.add_extension(_gpios)
         j3r0 = platform.request("panel_r0", 3);
         j3g0 = platform.request("panel_g0", 3);
         j3b0 = platform.request("panel_b0", 3);
         j3r1 = platform.request("panel_r1", 3);
         j3g1 = platform.request("panel_g1", 3);
         j3b1 = platform.request("panel_b1", 3);
-        #j3E = platform.request("panel_e", 3);
-        #j3A = platform.request("panel_a", 3);
-        #j3B = platform.request("panel_b", 3);
-        #j3C = platform.request("panel_c", 3);
-        #j3D = platform.request("panel_d", 3);
-        #j3clk = platform.request("panel_clk", 3);
-        #j3stb = platform.request("panel_stb", 3);
-        #j3oe = platform.request("panel_oe", 3);
 
         self.comb += j3r0.eq(s_j3r0)
         self.comb += j3g0.eq(s_j3g0)
@@ -299,14 +272,6 @@ class BaseSoC(SoCCore):
         self.comb += j3r1.eq(s_j3r1)
         self.comb += j3g1.eq(s_j3g1)
         self.comb += j3b1.eq(s_j3b1)
-        #self.comb += j3A.eq(s_j3a)
-        #self.comb += j3B.eq(s_j3b)
-        #self.comb += j3C.eq(s_j3c)
-        #self.comb += j3D.eq(s_j3d)
-        #self.comb += j3E.eq(s_j3e)
-        #self.comb += j3clk.eq(s_j3clk)
-        #self.comb += j3stb.eq(s_j3stb)
-        #self.comb += j3oe.eq(s_j3oe)
         self.comb += s_j3_ctrl_en.eq(s_shared_en[1])
         self.comb += s_j3_ctrl_addr.eq(self.panel_addr.storage)
         self.comb += s_j3_ctrl_wdat.eq(self.panel_wdat.storage)
@@ -350,21 +315,12 @@ class BaseSoC(SoCCore):
             o_panel_oe = s_j2oe
         )
 
-        platform.add_extension(_gpios)
         j2r0 = platform.request("panel_r0", 2);
         j2g0 = platform.request("panel_g0", 2);
         j2b0 = platform.request("panel_b0", 2);
         j2r1 = platform.request("panel_r1", 2);
         j2g1 = platform.request("panel_g1", 2);
         j2b1 = platform.request("panel_b1", 2);
-        #j2E = platform.request("panel_e", 2);
-        #j2A = platform.request("panel_a", 2);
-        #j2B = platform.request("panel_b", 2);
-        #j2C = platform.request("panel_c", 2);
-        #j2D = platform.request("panel_d", 2);
-        #j2clk = platform.request("panel_clk", 2);
-        #j2stb = platform.request("panel_stb", 2);
-        #j2oe = platform.request("panel_oe", 2);
 
         self.comb += j2r0.eq(s_j2r0)
         self.comb += j2g0.eq(s_j2g0)
@@ -372,14 +328,6 @@ class BaseSoC(SoCCore):
         self.comb += j2r1.eq(s_j2r1)
         self.comb += j2g1.eq(s_j2g1)
         self.comb += j2b1.eq(s_j2b1)
-        #self.comb += j2A.eq(s_j2a)
-        #self.comb += j2B.eq(s_j2b)
-        #self.comb += j2C.eq(s_j2c)
-        #self.comb += j2D.eq(s_j2d)
-        #self.comb += j2E.eq(s_j2e)
-        #self.comb += j2clk.eq(s_j2clk)
-        #self.comb += j2stb.eq(s_j2stb)
-        #self.comb += j2oe.eq(s_j2oe)
         self.comb += s_j2_ctrl_en.eq(s_shared_en[2])
         self.comb += s_j2_ctrl_addr.eq(self.panel_addr.storage)
         self.comb += s_j2_ctrl_wdat.eq(self.panel_wdat.storage)
@@ -423,21 +371,12 @@ class BaseSoC(SoCCore):
             o_panel_oe = s_j1oe
         )
 
-        platform.add_extension(_gpios)
         j1r0 = platform.request("panel_r0", 1);
         j1g0 = platform.request("panel_g0", 1);
         j1b0 = platform.request("panel_b0", 1);
         j1r1 = platform.request("panel_r1", 1);
         j1g1 = platform.request("panel_g1", 1);
         j1b1 = platform.request("panel_b1", 1);
-        #j1E = platform.request("panel_e", 1);
-        #j1A = platform.request("panel_a", 1);
-        #j1B = platform.request("panel_b", 1);
-        #j1C = platform.request("panel_c", 1);
-        #j1D = platform.request("panel_d", 1);
-        #j1clk = platform.request("panel_clk", 1);
-        #j1stb = platform.request("panel_stb", 1);
-        #j1oe = platform.request("panel_oe", 1);
 
         self.comb += j1r0.eq(s_j1r0)
         self.comb += j1g0.eq(s_j1g0)
@@ -445,14 +384,6 @@ class BaseSoC(SoCCore):
         self.comb += j1r1.eq(s_j1r1)
         self.comb += j1g1.eq(s_j1g1)
         self.comb += j1b1.eq(s_j1b1)
-        #self.comb += j1A.eq(s_j1a)
-        #self.comb += j1B.eq(s_j1b)
-        #self.comb += j1C.eq(s_j1c)
-        #self.comb += j1D.eq(s_j1d)
-        #self.comb += j1E.eq(s_j1e)
-        #self.comb += j1clk.eq(s_j1clk)
-        #self.comb += j1stb.eq(s_j1stb)
-        #self.comb += j1oe.eq(s_j1oe)
         self.comb += s_j1_ctrl_en.eq(s_shared_en[3])
         self.comb += s_j1_ctrl_addr.eq(self.panel_addr.storage)
         self.comb += s_j1_ctrl_wdat.eq(self.panel_wdat.storage)
