@@ -21,48 +21,6 @@ from litedram.phy import GENSDRPHY, HalfRateGENSDRPHY
 from liteeth.phy.ecp5rgmii import LiteEthPHYRGMII
 from litex.build.generic_platform import *
 
-_gpios = [
-    ("panel_shared_output", None,
-        Subsignal("e", Pins("j1:7")),
-        Subsignal("a", Pins("j1:8")),
-        Subsignal("b", Pins("j1:9")),
-        Subsignal("c", Pins("j1:10")),
-        Subsignal("d", Pins("j1:11")),
-        Subsignal("clk", Pins("j1:12")),
-        Subsignal("stb", Pins("j1:13")),
-        Subsignal("oe", Pins("j1:14")),
-        IOStandard("LVCMOS33")
-        ),
-
-    ("panel_r0",  1, Pins("j1:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  1, Pins("j1:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  1, Pins("j1:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  1, Pins("j1:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  1, Pins("j1:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  1, Pins("j1:6"), IOStandard("LVCMOS33")),
-
-    ("panel_r0",  2, Pins("j2:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  2, Pins("j2:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  2, Pins("j2:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  2, Pins("j2:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  2, Pins("j2:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  2, Pins("j2:6"), IOStandard("LVCMOS33")),
-
-    ("panel_r0",  3, Pins("j3:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  3, Pins("j3:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  3, Pins("j3:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  3, Pins("j3:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  3, Pins("j3:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  3, Pins("j3:6"), IOStandard("LVCMOS33")),
-
-    ("panel_r0",  4, Pins("j4:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  4, Pins("j4:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  4, Pins("j4:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  4, Pins("j4:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  4, Pins("j4:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  4, Pins("j4:6"), IOStandard("LVCMOS33")),
-]
-
 # CRG ----------------------------------------------------------------------------------------------
 
 class _CRG(LiteXModule):
@@ -136,9 +94,31 @@ class BaseSoC(SoCCore):
         **kwargs):
         platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
+        # Extend Platform --------------------------------------------------------------------------
         platform.add_source("ledpanel.v")
 
-        platform.add_extension(_gpios)
+        platform.add_extension([
+            ("panel_shared_output", 0,
+                Subsignal("e", Pins("j1:7")),
+                Subsignal("a", Pins("j1:8")),
+                Subsignal("b", Pins("j1:9")),
+                Subsignal("c", Pins("j1:10")),
+                Subsignal("d", Pins("j1:11")),
+                Subsignal("clk", Pins("j1:12")),
+                Subsignal("stb", Pins("j1:13")),
+                Subsignal("oe", Pins("j1:14")),
+                IOStandard("LVCMOS33")
+                )])
+
+        for jumper in (1,2,3,4,5,6,7,8):
+            platform.add_extension([
+                ("panel_r0",  jumper, Pins(f"j{jumper}:0"), IOStandard("LVCMOS33")),
+                ("panel_g0",  jumper, Pins(f"j{jumper}:1"), IOStandard("LVCMOS33")),
+                ("panel_b0",  jumper, Pins(f"j{jumper}:2"), IOStandard("LVCMOS33")),
+                ("panel_r1",  jumper, Pins(f"j{jumper}:4"), IOStandard("LVCMOS33")),
+                ("panel_g1",  jumper, Pins(f"j{jumper}:5"), IOStandard("LVCMOS33")),
+                ("panel_b1",  jumper, Pins(f"j{jumper}:6"), IOStandard("LVCMOS33")),
+                ])
 
         # LED Panel --------------------------------------------------------------------------------
         s_shared_en = Signal(4)
