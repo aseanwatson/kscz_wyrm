@@ -21,6 +21,7 @@ from litedram.phy import GENSDRPHY, HalfRateGENSDRPHY
 from liteeth.phy.ecp5rgmii import LiteEthPHYRGMII
 from liteeth.core import LiteEthUDPIPCore
 from liteeth.frontend.stream import LiteEthUDPStreamer
+from liteeth.frontend.etherbone import LiteEthEtherbone
 from litex.build.generic_platform import *
 
 from litescope import LiteScopeAnalyzer
@@ -85,6 +86,66 @@ _gpios = [
     ("panel_clk", 4, Pins("j4:12"), IOStandard("LVCMOS33")),
     ("panel_stb", 4, Pins("j4:13"), IOStandard("LVCMOS33")),
     ("panel_oe",  4, Pins("j4:14"), IOStandard("LVCMOS33")),
+
+    ("panel_r0",  5, Pins("j5:0"), IOStandard("LVCMOS33")),
+    ("panel_g0",  5, Pins("j5:1"), IOStandard("LVCMOS33")),
+    ("panel_b0",  5, Pins("j5:2"), IOStandard("LVCMOS33")),
+    ("panel_r1",  5, Pins("j5:4"), IOStandard("LVCMOS33")),
+    ("panel_g1",  5, Pins("j5:5"), IOStandard("LVCMOS33")),
+    ("panel_b1",  5, Pins("j5:6"), IOStandard("LVCMOS33")),
+    ("panel_e",   5, Pins("j5:7"), IOStandard("LVCMOS33")),
+    ("panel_a",   5, Pins("j5:8"), IOStandard("LVCMOS33")),
+    ("panel_b",   5, Pins("j5:9"), IOStandard("LVCMOS33")),
+    ("panel_c",   5, Pins("j5:10"), IOStandard("LVCMOS33")),
+    ("panel_d",   5, Pins("j5:11"), IOStandard("LVCMOS33")),
+    ("panel_clk", 5, Pins("j5:12"), IOStandard("LVCMOS33")),
+    ("panel_stb", 5, Pins("j5:13"), IOStandard("LVCMOS33")),
+    ("panel_oe",  5, Pins("j5:14"), IOStandard("LVCMOS33")),
+
+    ("panel_r0",  6, Pins("j6:0"), IOStandard("LVCMOS33")),
+    ("panel_g0",  6, Pins("j6:1"), IOStandard("LVCMOS33")),
+    ("panel_b0",  6, Pins("j6:2"), IOStandard("LVCMOS33")),
+    ("panel_r1",  6, Pins("j6:4"), IOStandard("LVCMOS33")),
+    ("panel_g1",  6, Pins("j6:5"), IOStandard("LVCMOS33")),
+    ("panel_b1",  6, Pins("j6:6"), IOStandard("LVCMOS33")),
+    ("panel_e",   6, Pins("j6:7"), IOStandard("LVCMOS33")),
+    ("panel_a",   6, Pins("j6:8"), IOStandard("LVCMOS33")),
+    ("panel_b",   6, Pins("j6:9"), IOStandard("LVCMOS33")),
+    ("panel_c",   6, Pins("j6:10"), IOStandard("LVCMOS33")),
+    ("panel_d",   6, Pins("j6:11"), IOStandard("LVCMOS33")),
+    ("panel_clk", 6, Pins("j6:12"), IOStandard("LVCMOS33")),
+    ("panel_stb", 6, Pins("j6:13"), IOStandard("LVCMOS33")),
+    ("panel_oe",  6, Pins("j6:14"), IOStandard("LVCMOS33")),
+
+    ("panel_r0",  7, Pins("j7:0"), IOStandard("LVCMOS33")),
+    ("panel_g0",  7, Pins("j7:1"), IOStandard("LVCMOS33")),
+    ("panel_b0",  7, Pins("j7:2"), IOStandard("LVCMOS33")),
+    ("panel_r1",  7, Pins("j7:4"), IOStandard("LVCMOS33")),
+    ("panel_g1",  7, Pins("j7:5"), IOStandard("LVCMOS33")),
+    ("panel_b1",  7, Pins("j7:6"), IOStandard("LVCMOS33")),
+    ("panel_e",   7, Pins("j7:7"), IOStandard("LVCMOS33")),
+    ("panel_a",   7, Pins("j7:8"), IOStandard("LVCMOS33")),
+    ("panel_b",   7, Pins("j7:9"), IOStandard("LVCMOS33")),
+    ("panel_c",   7, Pins("j7:10"), IOStandard("LVCMOS33")),
+    ("panel_d",   7, Pins("j7:11"), IOStandard("LVCMOS33")),
+    ("panel_clk", 7, Pins("j7:12"), IOStandard("LVCMOS33")),
+    ("panel_stb", 7, Pins("j7:13"), IOStandard("LVCMOS33")),
+    ("panel_oe",  7, Pins("j7:14"), IOStandard("LVCMOS33")),
+
+    ("panel_r0",  8, Pins("j8:0"), IOStandard("LVCMOS33")),
+    ("panel_g0",  8, Pins("j8:1"), IOStandard("LVCMOS33")),
+    ("panel_b0",  8, Pins("j8:2"), IOStandard("LVCMOS33")),
+    ("panel_r1",  8, Pins("j8:4"), IOStandard("LVCMOS33")),
+    ("panel_g1",  8, Pins("j8:5"), IOStandard("LVCMOS33")),
+    ("panel_b1",  8, Pins("j8:6"), IOStandard("LVCMOS33")),
+    ("panel_e",   8, Pins("j8:7"), IOStandard("LVCMOS33")),
+    ("panel_a",   8, Pins("j8:8"), IOStandard("LVCMOS33")),
+    ("panel_b",   8, Pins("j8:9"), IOStandard("LVCMOS33")),
+    ("panel_c",   8, Pins("j8:10"), IOStandard("LVCMOS33")),
+    ("panel_d",   8, Pins("j8:11"), IOStandard("LVCMOS33")),
+    ("panel_clk", 8, Pins("j8:12"), IOStandard("LVCMOS33")),
+    ("panel_stb", 8, Pins("j8:13"), IOStandard("LVCMOS33")),
+    ("panel_oe",  8, Pins("j8:14"), IOStandard("LVCMOS33")),
 ]
 
 # CRG ----------------------------------------------------------------------------------------------
@@ -158,7 +219,7 @@ class BaseSoC(SoCMini):
         platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
         # LED Panel --------------------------------------------------------------------------------
-        s_shared_en = Signal(4)
+        s_shared_en = Signal(8)
         s_shared_addr = Signal(16)
         s_shared_wdat = Signal(24)
 
@@ -282,7 +343,6 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j3oe
         )
 
-        platform.add_extension(_gpios)
         j3r0 = platform.request("panel_r0", 3);
         j3g0 = platform.request("panel_g0", 3);
         j3b0 = platform.request("panel_b0", 3);
@@ -355,7 +415,6 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j2oe
         )
 
-        platform.add_extension(_gpios)
         j2r0 = platform.request("panel_r0", 2);
         j2g0 = platform.request("panel_g0", 2);
         j2b0 = platform.request("panel_b0", 2);
@@ -428,7 +487,6 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j1oe
         )
 
-        platform.add_extension(_gpios)
         j1r0 = platform.request("panel_r0", 1);
         j1g0 = platform.request("panel_g0", 1);
         j1b0 = platform.request("panel_b0", 1);
@@ -462,6 +520,294 @@ class BaseSoC(SoCMini):
         self.comb += s_j1_ctrl_addr.eq(s_shared_addr)
         self.comb += s_j1_ctrl_wdat.eq(s_shared_wdat)
 
+        s_j5_ctrl_en = Signal()
+        s_j5_ctrl_addr = Signal(16)
+        s_j5_ctrl_wdat = Signal(24)
+        s_j5r0 = Signal()
+        s_j5g0 = Signal()
+        s_j5b0 = Signal()
+        s_j5r1 = Signal()
+        s_j5g1 = Signal()
+        s_j5b1 = Signal()
+        s_j5a = Signal()
+        s_j5b = Signal()
+        s_j5c = Signal()
+        s_j5d = Signal()
+        s_j5e = Signal()
+        s_j5clk = Signal()
+        s_j5stb = Signal()
+        s_j5oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk = ClockSignal(),
+            i_ctrl_en = s_j5_ctrl_en,
+            i_ctrl_addr = s_j5_ctrl_addr,
+            i_ctrl_wdat = s_j5_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0 = s_j5r0,
+            o_panel_g0 = s_j5g0,
+            o_panel_b0 = s_j5b0,
+            o_panel_r1 = s_j5r1,
+            o_panel_g1 = s_j5g1,
+            o_panel_b1 = s_j5b1,
+            o_panel_a = s_j5a,
+            o_panel_b = s_j5b,
+            o_panel_c = s_j5c,
+            o_panel_d = s_j5d,
+            o_panel_e = s_j5e,
+            o_panel_clk = s_j5clk,
+            o_panel_stb = s_j5stb,
+            o_panel_oe = s_j5oe
+        )
+
+        j5r0 = platform.request("panel_r0", 5);
+        j5g0 = platform.request("panel_g0", 5);
+        j5b0 = platform.request("panel_b0", 5);
+        j5r1 = platform.request("panel_r1", 5);
+        j5g1 = platform.request("panel_g1", 5);
+        j5b1 = platform.request("panel_b1", 5);
+        #j5E = platform.request("panel_e", 5);
+        #j5A = platform.request("panel_a", 5);
+        #j5B = platform.request("panel_b", 5);
+        #j5C = platform.request("panel_c", 5);
+        #j5D = platform.request("panel_d", 5);
+        #j5clk = platform.request("panel_clk", 5);
+        #j5stb = platform.request("panel_stb", 5);
+        #j5oe = platform.request("panel_oe", 5);
+
+        self.comb += j5r0.eq(s_j5r0)
+        self.comb += j5g0.eq(s_j5g0)
+        self.comb += j5b0.eq(s_j5b0)
+        self.comb += j5r1.eq(s_j5r1)
+        self.comb += j5g1.eq(s_j5g1)
+        self.comb += j5b1.eq(s_j5b1)
+        #self.comb += j5A.eq(s_j5a)
+        #self.comb += j5B.eq(s_j5b)
+        #self.comb += j5C.eq(s_j5c)
+        #self.comb += j5D.eq(s_j5d)
+        #self.comb += j5E.eq(s_j5e)
+        #self.comb += j5clk.eq(s_j5clk)
+        #self.comb += j5stb.eq(s_j5stb)
+        #self.comb += j5oe.eq(s_j5oe)
+        self.comb += s_j5_ctrl_en.eq(s_shared_en[4])
+        self.comb += s_j5_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j5_ctrl_wdat.eq(s_shared_wdat)
+
+        s_j6_ctrl_en = Signal()
+        s_j6_ctrl_addr = Signal(16)
+        s_j6_ctrl_wdat = Signal(24)
+        s_j6r0 = Signal()
+        s_j6g0 = Signal()
+        s_j6b0 = Signal()
+        s_j6r1 = Signal()
+        s_j6g1 = Signal()
+        s_j6b1 = Signal()
+        s_j6a = Signal()
+        s_j6b = Signal()
+        s_j6c = Signal()
+        s_j6d = Signal()
+        s_j6e = Signal()
+        s_j6clk = Signal()
+        s_j6stb = Signal()
+        s_j6oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk      = ClockSignal(),
+            i_ctrl_en       = s_j6_ctrl_en,
+            i_ctrl_addr     = s_j6_ctrl_addr,
+            i_ctrl_wdat     = s_j6_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0      = s_j6r0,
+            o_panel_g0      = s_j6g0,
+            o_panel_b0      = s_j6b0,
+            o_panel_r1      = s_j6r1,
+            o_panel_g1      = s_j6g1,
+            o_panel_b1      = s_j6b1,
+            o_panel_a       = s_j6a,
+            o_panel_b       = s_j6b,
+            o_panel_c       = s_j6c,
+            o_panel_d       = s_j6d,
+            o_panel_e       = s_j6e,
+            o_panel_clk     = s_j6clk,
+            o_panel_stb     = s_j6stb,
+            o_panel_oe      = s_j6oe
+        )
+
+        j6r0 = platform.request("panel_r0",    6);
+        j6g0 = platform.request("panel_g0",    6);
+        j6b0 = platform.request("panel_b0",    6);
+        j6r1 = platform.request("panel_r1",    6);
+        j6g1 = platform.request("panel_g1",    6);
+        j6b1 = platform.request("panel_b1",    6);
+        #j6E = platform.request("panel_e",     6);
+        #j6A = platform.request("panel_a",     6);
+        #j6B = platform.request("panel_b",     6);
+        #j6C = platform.request("panel_c",     6);
+        #j6D = platform.request("panel_d",     6);
+        #j6clk = platform.request("panel_clk", 6);
+        #j6stb = platform.request("panel_stb", 6);
+        #j6oe = platform.request("panel_oe",   6);
+
+        self.comb += j6r0.eq(s_j6r0)
+        self.comb += j6g0.eq(s_j6g0)
+        self.comb += j6b0.eq(s_j6b0)
+        self.comb += j6r1.eq(s_j6r1)
+        self.comb += j6g1.eq(s_j6g1)
+        self.comb += j6b1.eq(s_j6b1)
+        #self.comb += j6A.eq(s_j6a)
+        #self.comb += j6B.eq(s_j6b)
+        #self.comb += j6C.eq(s_j6c)
+        #self.comb += j6D.eq(s_j6d)
+        #self.comb += j6E.eq(s_j6e)
+        #self.comb += j6clk.eq(s_j6clk)
+        #self.comb += j6stb.eq(s_j6stb)
+        #self.comb += j6oe.eq(s_j6oe)
+        self.comb += s_j6_ctrl_en.eq(s_shared_en[4])
+        self.comb += s_j6_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j6_ctrl_wdat.eq(s_shared_wdat)
+
+        s_j7_ctrl_en = Signal()
+        s_j7_ctrl_addr = Signal(16)
+        s_j7_ctrl_wdat = Signal(24)
+        s_j7r0 = Signal()
+        s_j7g0 = Signal()
+        s_j7b0 = Signal()
+        s_j7r1 = Signal()
+        s_j7g1 = Signal()
+        s_j7b1 = Signal()
+        s_j7a = Signal()
+        s_j7b = Signal()
+        s_j7c = Signal()
+        s_j7d = Signal()
+        s_j7e = Signal()
+        s_j7clk = Signal()
+        s_j7stb = Signal()
+        s_j7oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk      = ClockSignal(),
+            i_ctrl_en       = s_j7_ctrl_en,
+            i_ctrl_addr     = s_j7_ctrl_addr,
+            i_ctrl_wdat     = s_j7_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0      = s_j7r0,
+            o_panel_g0      = s_j7g0,
+            o_panel_b0      = s_j7b0,
+            o_panel_r1      = s_j7r1,
+            o_panel_g1      = s_j7g1,
+            o_panel_b1      = s_j7b1,
+            o_panel_a       = s_j7a,
+            o_panel_b       = s_j7b,
+            o_panel_c       = s_j7c,
+            o_panel_d       = s_j7d,
+            o_panel_e       = s_j7e,
+            o_panel_clk     = s_j7clk,
+            o_panel_stb     = s_j7stb,
+            o_panel_oe      = s_j7oe
+        )
+
+        j7r0 = platform.request("panel_r0",    7);
+        j7g0 = platform.request("panel_g0",    7);
+        j7b0 = platform.request("panel_b0",    7);
+        j7r1 = platform.request("panel_r1",    7);
+        j7g1 = platform.request("panel_g1",    7);
+        j7b1 = platform.request("panel_b1",    7);
+        #j7E = platform.request("panel_e",     7);
+        #j7A = platform.request("panel_a",     7);
+        #j7B = platform.request("panel_b",     7);
+        #j7C = platform.request("panel_c",     7);
+        #j7D = platform.request("panel_d",     7);
+        #j7clk = platform.request("panel_clk", 7);
+        #j7stb = platform.request("panel_stb", 7);
+        #j7oe = platform.request("panel_oe",   7);
+
+        self.comb += j7r0.eq(s_j7r0)
+        self.comb += j7g0.eq(s_j7g0)
+        self.comb += j7b0.eq(s_j7b0)
+        self.comb += j7r1.eq(s_j7r1)
+        self.comb += j7g1.eq(s_j7g1)
+        self.comb += j7b1.eq(s_j7b1)
+        #self.comb += j7A.eq(s_j7a)
+        #self.comb += j7B.eq(s_j7b)
+        #self.comb += j7C.eq(s_j7c)
+        #self.comb += j7D.eq(s_j7d)
+        #self.comb += j7E.eq(s_j7e)
+        #self.comb += j7clk.eq(s_j7clk)
+        #self.comb += j7stb.eq(s_j7stb)
+        #self.comb += j7oe.eq(s_j7oe)
+        self.comb += s_j7_ctrl_en.eq(s_shared_en[4])
+        self.comb += s_j7_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j7_ctrl_wdat.eq(s_shared_wdat)
+
+        s_j8_ctrl_en = Signal()
+        s_j8_ctrl_addr = Signal(16)
+        s_j8_ctrl_wdat = Signal(24)
+        s_j8r0 = Signal()
+        s_j8g0 = Signal()
+        s_j8b0 = Signal()
+        s_j8r1 = Signal()
+        s_j8g1 = Signal()
+        s_j8b1 = Signal()
+        s_j8a = Signal()
+        s_j8b = Signal()
+        s_j8c = Signal()
+        s_j8d = Signal()
+        s_j8e = Signal()
+        s_j8clk = Signal()
+        s_j8stb = Signal()
+        s_j8oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk      = ClockSignal(),
+            i_ctrl_en       = s_j8_ctrl_en,
+            i_ctrl_addr     = s_j8_ctrl_addr,
+            i_ctrl_wdat     = s_j8_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0      = s_j8r0,
+            o_panel_g0      = s_j8g0,
+            o_panel_b0      = s_j8b0,
+            o_panel_r1      = s_j8r1,
+            o_panel_g1      = s_j8g1,
+            o_panel_b1      = s_j8b1,
+            o_panel_a       = s_j8a,
+            o_panel_b       = s_j8b,
+            o_panel_c       = s_j8c,
+            o_panel_d       = s_j8d,
+            o_panel_e       = s_j8e,
+            o_panel_clk     = s_j8clk,
+            o_panel_stb     = s_j8stb,
+            o_panel_oe      = s_j8oe
+        )
+
+        j8r0 = platform.request("panel_r0",    8);
+        j8g0 = platform.request("panel_g0",    8);
+        j8b0 = platform.request("panel_b0",    8);
+        j8r1 = platform.request("panel_r1",    8);
+        j8g1 = platform.request("panel_g1",    8);
+        j8b1 = platform.request("panel_b1",    8);
+        #j8E = platform.request("panel_e",     8);
+        #j8A = platform.request("panel_a",     8);
+        #j8B = platform.request("panel_b",     8);
+        #j8C = platform.request("panel_c",     8);
+        #j8D = platform.request("panel_d",     8);
+        #j8clk = platform.request("panel_clk", 8);
+        #j8stb = platform.request("panel_stb", 8);
+        #j8oe = platform.request("panel_oe",   8);
+
+        self.comb += j8r0.eq(s_j8r0)
+        self.comb += j8g0.eq(s_j8g0)
+        self.comb += j8b0.eq(s_j8b0)
+        self.comb += j8r1.eq(s_j8r1)
+        self.comb += j8g1.eq(s_j8g1)
+        self.comb += j8b1.eq(s_j8b1)
+        #self.comb += j8A.eq(s_j8a)
+        #self.comb += j8B.eq(s_j8b)
+        #self.comb += j8C.eq(s_j8c)
+        #self.comb += j8D.eq(s_j8d)
+        #self.comb += j8E.eq(s_j8e)
+        #self.comb += j8clk.eq(s_j8clk)
+        #self.comb += j8stb.eq(s_j8stb)
+        #self.comb += j8oe.eq(s_j8oe)
+        self.comb += s_j8_ctrl_en.eq(s_shared_en[4])
+        self.comb += s_j8_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j8_ctrl_wdat.eq(s_shared_wdat)
+
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, int(sys_clk_freq),
             use_internal_osc = use_internal_osc,
@@ -482,32 +828,21 @@ class BaseSoC(SoCMini):
             pads       = self.platform.request("eth", eth_phy),
             tx_delay   = 0e-9,
         )
-        self.add_etherbone(
-            phy         = self.ethphy,
-            ip_address  = "192.168.10.31",
-            data_width  = 32,
-            #mac_address = 0x726b895bc2e2,
-            #with_ethmac = True,
+        self.submodules.ethcore = udp_core = LiteEthUDPIPCore(
+            self.ethphy,
+            mac_address = 0x726b895bc2e2,
+            ip_address  = eth_ip,
+            clk_freq    = int(sys_clk_freq),
+            dw          = 32,
+            with_ip_broadcast = True,
+            with_sys_datapath = True,
+            endianness  = "big",
+            #interface   = "crossbar",
         )
-        udp_core = self.ethcore_etherbone
-        #self.submodules.ethcore = udp_core = LiteEthUDPIPCore(
-        #    self.ethphy,
-        #    mac_address = 0x726b895bc2e2,
-        #    ip_address  = eth_ip,
-        #    clk_freq    = int(sys_clk_freq),
-        #    #interface   = "crossbar",
-        #)
-        #self.add_ethernet(phy=self.ethphy, data_width=32)
 
-        # UDP Streamer -----------------------------------------------------------------------------
-        #self.submodules.udp_streamer = udp_streamer = LiteEthUDPStreamer(
-        #    udp_core,
-        #    ip_address = "192.168.10.197",
-        #    udp_port   = 26127,
-        #    #data_width = 8,
-        #)
-
-        ##udp_port = self.ethcore.udp.crossbar.get_port(2025, dw=8, cd="sys")
+        # Instantiate a dummy port to make the UDP IP Core and ARP circuitry work
+        udp_port = udp_core.udp.crossbar.get_port(2025, dw=32, cd="sys")
+        self.comb += udp_port.source.ready.eq(1)
 
         udp_rx = udp_core.udp.rx.source;
 
@@ -544,54 +879,16 @@ class BaseSoC(SoCMini):
         self.comb += s_udp_reset.eq(0)
         self.sync += s_udp_source_valid.eq(udp_rx.valid)
         self.sync += s_udp_source_last.eq(udp_rx.last)
-        #self.comb += udp_streamer.source.ready.eq(s_udp_source_ready)
+        self.sync += udp_rx.ready.eq(s_udp_source_ready)
         self.sync += s_udp_source_dst_port.eq(udp_rx.param.dst_port)
         self.sync += s_udp_source_src_port.eq(15)
-        #self.comb += s_udp_source_ip_address.eq(
-        #self.comb += s_udp_source_length.eq(
         self.sync += s_udp_source_data.eq(udp_rx.payload.data)
         self.sync += s_udp_source_error.eq(udp_rx.payload.error)
-
 
         s_test_port = Signal();
         self.comb += s_test_port.eq((udp_core.udp.rx.source.param.dst_port[15] == 1) & udp_core.udp.rx.source.valid);
         led = platform.request("user_led_n", 0)
-        self.comb += led.eq(s_test_port)
-        #self.comb += udp_streamer.source.ready.eq(1)
-
-        # Ethernet / Etherbone ---------------------------------------------------------------------
-        # self.ethphy = LiteEthPHYRGMII(
-        #     clock_pads = self.platform.request("eth_clocks", eth_phy),
-        #     pads       = self.platform.request("eth", eth_phy),
-        #     tx_delay   = 0e-9)
-        # self.add_ethernet(phy=self.ethphy, , data_width=32)
-
-        analyzer_signals = [
-            s_udp_reset,
-            s_udp_source_valid,
-            s_udp_source_last,
-            s_udp_source_ready,
-            s_udp_source_src_port,
-            s_udp_source_dst_port,
-            s_udp_source_ip_address,
-            s_udp_source_length,
-            s_udp_source_data,
-            s_udp_source_error,
-            s_udp_led,
-            udp_core.udp.rx.source,
-            s_test_port,
-            s_shared_wdat,
-            s_shared_addr,
-            s_shared_en
-        ]
-
-        #analyzer_signals = []
-        self.submodules.analyzer = LiteScopeAnalyzer(analyzer_signals,
-            depth        = 1024,
-            clock_domain = "sys",
-            samplerate   = int(sys_clk_freq),
-            csr_csv      = "analyzer.csv"
-        )
+        self.comb += led.eq(s_udp_led)
 
         # SPI Flash --------------------------------------------------------------------------------
         if with_spi_flash:
@@ -607,13 +904,13 @@ class BaseSoC(SoCMini):
 def main():
     from litex.build.parser import LiteXArgumentParser
     parser = LiteXArgumentParser(platform=colorlight_5a_75b.Platform, description="LiteX SoC on Colorlight 5A-75X.")
-    parser.add_target_argument("--revision",          default="8.2",            help="Board revision (6.0, 6.1, 7.0, 8.0, or 8.2).")
-    parser.add_target_argument("--sys-clk-freq",      default=50e6, type=float, help="System clock frequency.")
-    parser.add_target_argument("--eth-ip",            default="192.168.10.30",  help="Ethernet/Etherbone IP address.")
-    parser.add_target_argument("--eth-phy",           default=0, type=int,      help="Ethernet PHY (0 or 1).")
-    parser.add_target_argument("--sdram-rate",        default="1:1",            help="SDRAM Rate (1:1 Full Rate or 1:2 Half Rate).")
-    parser.add_target_argument("--with-spi-flash",    action="store_true",      help="Add SPI flash support to the SoC")
-    parser.add_target_argument("--flash",             action="store_true",      help="Flash the code to the target FPGA")
+    parser.add_target_argument("--revision",          default="8.2",             help="Board revision (6.0, 6.1, 7.0, 8.0, or 8.2).")
+    parser.add_target_argument("--sys-clk-freq",      default=50e6, type=float,  help="System clock frequency.")
+    parser.add_target_argument("--eth-ip",            default="192.168.10.30",   help="Ethernet/Etherbone IP address.")
+    parser.add_target_argument("--eth-phy",           default=0, type=int,       help="Ethernet PHY (0 or 1).")
+    parser.add_target_argument("--sdram-rate",        default="1:1",             help="SDRAM Rate (1:1 Full Rate or 1:2 Half Rate).")
+    parser.add_target_argument("--with-spi-flash",    action="store_true",       help="Add SPI flash support to the SoC")
+    parser.add_target_argument("--flash",             action="store_true",       help="Flash the code to the target FPGA")
     args = parser.parse_args()
 
     soc = BaseSoC(revision=args.revision,
