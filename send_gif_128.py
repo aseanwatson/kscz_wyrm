@@ -8,7 +8,7 @@ from PIL import Image
 from PIL import ImageSequence
 
 UDP_IP = '192.168.10.30'
-UDP_PORT = 1234
+UDP_PORT = 0x80FF
 
 num_rows = 128
 num_cols = num_rows
@@ -40,9 +40,9 @@ while(1):
                     if i == 3:
                         adj_x = adj_x + 64
                         adj_y = adj_y + 64
-                    r = cast[adj_y][adj_x][2].item()
-                    g = cast[adj_y][adj_x][0].item()
-                    b = cast[adj_y][adj_x][1].item()
+                    r = cast[adj_y][adj_x][0].item()
+                    g = cast[adj_y][adj_x][1].item()
+                    b = cast[adj_y][adj_x][2].item()
         
                     fbuf[x+(64*(y%4))] = socket.htonl((addr << 18) | (((int(r))&0xFC) << 10)
                                                                        | (((int(g))&0xFC) << 4)
@@ -50,6 +50,8 @@ while(1):
                 if (y % 4) == 3:
                     tosend = bytearray()
                     tosend.append(1 << i)
+                    tosend.append(0)
+                    tosend.append(0)
                     tosend.append(0)
                     tosend.extend(fbuf.tobytes())
                     s.sendto(tosend, (UDP_IP, UDP_PORT))

@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 
 UDP_IP = '192.168.10.30'
-UDP_PORT = 1234
+UDP_PORT = 0x80ff
 
 # Detect endianness and create vectorized htonl
 def is_big_endian():
@@ -70,16 +70,16 @@ while success:
         segment = frame[y_offset:y_offset+64, x_offset:x_offset+64]
         
         # Extract RGB components as uint32 so we can shift them up into position
-        r = segment[:, :, 2].astype(np.uint32)
+        r = segment[:, :, 0].astype(np.uint32)
         g = segment[:, :, 1].astype(np.uint32)
-        b = segment[:, :, 0].astype(np.uint32)
+        b = segment[:, :, 2].astype(np.uint32)
         
         # Vectorized pixel packing
         packed_pixels = np.array(
             (base_addr << 18) |
             ((b & 0xFC) << 10) |
-            ((r & 0xFC) << 4) |
-            ((g & 0xFC) >> 2)
+            ((g & 0xFC) << 4) |
+            ((r & 0xFC) >> 2)
         )
         
         # Process in groups of 4 lines
@@ -91,9 +91,11 @@ while success:
             tosend = bytearray()
             tosend.append(1 << i)  # Panel indicator
             tosend.append(0)
+            tosend.append(0)
+            tosend.append(0)
             tosend.extend(fbuf)  # Already in network byte order
             s.sendto(tosend, (UDP_IP, UDP_PORT))
-            time.sleep(0.0005) # The FPGA can't keep up currently - give it a pause
+            #time.sleep(0.0005) # The FPGA can't keep up currently - give it a pause
     
     # Frame timing management
     end_time = time.monotonic()
