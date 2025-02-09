@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+from typing import Any, Generator
 from migen import *
+from migen.fhdl.structure import _Assign
 from migen.genlib.resetsync import AsyncResetSynchronizer
 
 from litex.gen import *
@@ -78,6 +80,37 @@ class _CRG(LiteXModule):
         sdram_clk = ClockSignal("sys2x_ps" if sdram_rate == "1:2" else "sys_ps")
         self.specials += DDROutput(1, 0, platform.request("sdram_clock"), sdram_clk)
 
+class InstanceParamters(Record):
+    def __init__(self, instance:Instance,
+            name:str = None,
+            **kwargs) -> None:
+        layout = []
+        self.instance = instance
+        for item in instance.items:
+            if isinstance(item, Instance.Input) \
+                    and isinstance(item.expr, Signal):
+                layout.append((item.name, item.expr.nbits, DIR_S_TO_M))
+            elif isinstance(item, Instance.Output) \
+                    and isinstance(item.expr, Signal):
+                layout.append((item.name, item.expr.nbits, DIR_M_TO_S))
+        Record.__init__(self,
+            layout=layout,
+            name=name,
+            **kwargs)
+
+    def attach(self):
+        """
+        Return the migen statements to connect the InstanceParameters(Record)
+        to the Instance.
+        """
+        for item in self.instance.items:
+            if isinstance(item, Instance.Input) \
+                    and isinstance(item.expr, Signal):
+                yield item.expr.eq(getattr(self, item.name))
+            elif isinstance(item, Instance.Output) \
+                    and isinstance(item.expr, Signal):
+                yield getattr(self, item.name).eq(item.expr)
+
 # BaseSoC ------------------------------------------------------------------------------------------
 
 class BaseSoC(SoCCore):
@@ -98,27 +131,27 @@ class BaseSoC(SoCCore):
         platform.add_source("ledpanel.v")
 
         platform.add_extension([
-            ("panel_shared_output", 0,
-                Subsignal("e", Pins("j1:7")),
-                Subsignal("a", Pins("j1:8")),
-                Subsignal("b", Pins("j1:9")),
-                Subsignal("c", Pins("j1:10")),
-                Subsignal("d", Pins("j1:11")),
-                Subsignal("clk", Pins("j1:12")),
-                Subsignal("stb", Pins("j1:13")),
-                Subsignal("oe", Pins("j1:14")),
-                IOStandard("LVCMOS33")
-                )])
+            ("shared_output", 0,
+                Subsignal("panel_e", Pins("j1:7")),
+                Subsignal("panel_a", Pins("j1:8")),
+                Subsignal("panel_b", Pins("j1:9")),
+                Subsignal("panel_c", Pins("j1:10")),
+                Subsignal("panel_d", Pins("j1:11")),
+                Subsignal("panel_clk", Pins("j1:12")),
+                Subsignal("panel_stb", Pins("j1:13")),
+                Subsignal("panel_oe", Pins("j1:14")),
+                IOStandard("LVCMOS33"))])
 
         for jumper in (1,2,3,4,5,6,7,8):
             platform.add_extension([
-                ("panel_r0",  jumper, Pins(f"j{jumper}:0"), IOStandard("LVCMOS33")),
-                ("panel_g0",  jumper, Pins(f"j{jumper}:1"), IOStandard("LVCMOS33")),
-                ("panel_b0",  jumper, Pins(f"j{jumper}:2"), IOStandard("LVCMOS33")),
-                ("panel_r1",  jumper, Pins(f"j{jumper}:4"), IOStandard("LVCMOS33")),
-                ("panel_g1",  jumper, Pins(f"j{jumper}:5"), IOStandard("LVCMOS33")),
-                ("panel_b1",  jumper, Pins(f"j{jumper}:6"), IOStandard("LVCMOS33")),
-                ])
+                ("rgb_output", jumper,
+                Subsignal("panel_r0", Pins(f"j{jumper}:0")),
+                Subsignal("panel_g0", Pins(f"j{jumper}:1")),
+                Subsignal("panel_b0", Pins(f"j{jumper}:2")),
+                Subsignal("panel_r1", Pins(f"j{jumper}:4")),
+                Subsignal("panel_g1", Pins(f"j{jumper}:5")),
+                Subsignal("panel_b1", Pins(f"j{jumper}:6")),
+                IOStandard("LVCMOS33"))])
 
         # CRG --------------------------------------------------------------------------------------
         with_rst     = kwargs["uart_name"] not in ["serial", "crossover"] # serial_rx shared with user_btn_n.
@@ -188,11 +221,6 @@ class BaseSoC(SoCCore):
             self.panel_en = CSRStorage(size=4)
             self.panel_addr = CSRStorage(size=16)
             self.panel_wdat = CSRStorage(size=24)
-            # REVIEW: do we need/want a separate signal beyond panel_en.storage?
-            self.ledpanel_shared_en = shared_en = Signal(4)
-            self.comb += [
-                shared_en.eq(self.panel_en.storage)
-            ]
 
     def add_ledpanel(self, jumper:int, select:int, main_panel:bool = False) -> None:
         platform = self.platform
@@ -221,66 +249,45 @@ class BaseSoC(SoCCore):
             Instance.Output("panel_oe"),
         )
 
+        panel_parameters = InstanceParamters(panel)
+        self.comb += panel_parameters.attach()
+
         self.specials += panel
 
         if main_panel:
-            s_j_a = panel.get_io("panel_a")
-            s_j_b = panel.get_io("panel_b")
-            s_j_c = panel.get_io("panel_c")
-            s_j_d = panel.get_io("panel_d")
-            s_j_e = panel.get_io("panel_e")
-            s_j_clk = panel.get_io("panel_clk")
-            s_j_stb = panel.get_io("panel_stb")
-            s_j_oe = panel.get_io("panel_oe")
+            shared_output = platform.request("shared_output")
+            self.comb += panel_parameters.connect(
+                shared_output,
+                keep=[
+                    "panel_a",
+                    "panel_b",
+                    "panel_c",
+                    "panel_d",
+                    "panel_e",
+                    "panel_clk",
+                    "panel_stb",
+                    "panel_oe",
+                ])
 
-            panel_shared_output = platform.request("panel_shared_output")
-            j_A = panel_shared_output.a
-            j_B = panel_shared_output.b
-            j_C = panel_shared_output.c
-            j_D = panel_shared_output.d
-            j_E = panel_shared_output.e
-            j_clk = panel_shared_output.clk
-            j_stb = panel_shared_output.stb
-            j_oe = panel_shared_output.oe
-
-            self.comb += [
-                j_A.eq(s_j_a),
-                j_B.eq(s_j_b),
-                j_C.eq(s_j_c),
-                j_D.eq(s_j_d),
-                j_E.eq(s_j_e),
-                j_clk.eq(s_j_clk),
-                j_stb.eq(s_j_stb),
-                j_oe.eq(s_j_oe),
+        rgb_output = platform.request("rgb_output", number=jumper)
+        self.comb += panel_parameters.connect(
+            rgb_output,
+            keep = [
+                "panel_r0",
+                "panel_b0",
+                "panel_g0",
+                "panel_r1",
+                "panel_b1",
+                "panel_g1",
             ]
+        )
 
-        s_ctrl_en = panel.get_io("ctrl_en")
-        s_ctrl_addr = panel.get_io("ctrl_addr")
-        s_ctrl_wdat = panel.get_io("ctrl_wdat")
-
-        s_j_r0 = panel.get_io("panel_r0")
-        s_j_g0 = panel.get_io("panel_g0")
-        s_j_b0 = panel.get_io("panel_b0")
-        s_j_r1 = panel.get_io("panel_r1")
-        s_j_g1 = panel.get_io("panel_g1")
-        s_j_b1 = panel.get_io("panel_b1")
-
-        j_r0 = platform.request("panel_r0", jumper);
-        j_g0 = platform.request("panel_g0", jumper);
-        j_b0 = platform.request("panel_b0", jumper);
-        j_r1 = platform.request("panel_r1", jumper);
-        j_g1 = platform.request("panel_g1", jumper);
-        j_b1 = platform.request("panel_b1", jumper);
+        s_ctrl_en = panel_parameters.ctrl_en
+        s_ctrl_addr = panel_parameters.ctrl_addr
+        s_ctrl_wdat = panel_parameters.ctrl_wdat
 
         self.comb += [
-            j_r0.eq(s_j_r0),
-            j_g0.eq(s_j_g0),
-            j_b0.eq(s_j_b0),
-            j_r1.eq(s_j_r1),
-            j_g1.eq(s_j_g1),
-            j_b1.eq(s_j_b1),
-
-            s_ctrl_en.eq(self.ledpanel_shared_en[select]),
+            s_ctrl_en.eq(self.panel_en.storage[select]),
             s_ctrl_addr.eq(self.panel_addr.storage),
             s_ctrl_wdat.eq(self.panel_wdat.storage),
         ]
