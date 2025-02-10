@@ -93,6 +93,7 @@ class BaseSoC(SoCMini):
         sdram_rate       = "1:1",
         with_spi_flash   = False,
         rom              = None,
+        rgb_order        = 'rgb',
         **kwargs):
         self.platform = platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
@@ -112,15 +113,24 @@ class BaseSoC(SoCMini):
                 Subsignal("panel_oe", Pins("j1:14")),
                 IOStandard("LVCMOS33"))])
 
+        assert len(rgb_order) == 3
+        assert 'r' in rgb_order
+        assert 'g' in rgb_order
+        assert 'b' in rgb_order
+
+        r_offset = rgb_order.index('r')
+        g_offset = rgb_order.index('g')
+        b_offset = rgb_order.index('b')
+
         for jumper in (1,2,3,4,5,6,7,8):
             platform.add_extension([
                 ("rgb_output", jumper,
-                    Subsignal("panel_r0", Pins(f"j{jumper}:0")),
-                    Subsignal("panel_g0", Pins(f"j{jumper}:1")),
-                    Subsignal("panel_b0", Pins(f"j{jumper}:2")),
-                    Subsignal("panel_r1", Pins(f"j{jumper}:4")),
-                    Subsignal("panel_g1", Pins(f"j{jumper}:5")),
-                    Subsignal("panel_b1", Pins(f"j{jumper}:6")),
+                    Subsignal("panel_r0", Pins(f"j{jumper}:{r_offset}")),
+                    Subsignal("panel_g0", Pins(f"j{jumper}:{g_offset}")),
+                    Subsignal("panel_b0", Pins(f"j{jumper}:{b_offset}")),
+                    Subsignal("panel_r1", Pins(f"j{jumper}:{r_offset+4}")),
+                    Subsignal("panel_g1", Pins(f"j{jumper}:{g_offset+4}")),
+                    Subsignal("panel_b1", Pins(f"j{jumper}:{b_offset+4}")),
                     IOStandard("LVCMOS33"))])
 
         # LED Panel --------------------------------------------------------------------------------
