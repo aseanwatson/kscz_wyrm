@@ -33,119 +33,48 @@ _gpios = [
     ("panel_r1",  1, Pins("j1:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  1, Pins("j1:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  1, Pins("j1:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   1, Pins("j1:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   1, Pins("j1:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   1, Pins("j1:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   1, Pins("j1:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   1, Pins("j1:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 1, Pins("j1:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 1, Pins("j1:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  1, Pins("j1:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  2, Pins("j2:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  2, Pins("j2:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  2, Pins("j2:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  2, Pins("j2:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  2, Pins("j2:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  2, Pins("j2:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   2, Pins("j2:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   2, Pins("j2:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   2, Pins("j2:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   2, Pins("j2:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   2, Pins("j2:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 2, Pins("j2:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 2, Pins("j2:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  2, Pins("j2:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  3, Pins("j3:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  3, Pins("j3:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  3, Pins("j3:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  3, Pins("j3:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  3, Pins("j3:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  3, Pins("j3:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   3, Pins("j3:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   3, Pins("j3:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   3, Pins("j3:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   3, Pins("j3:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   3, Pins("j3:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 3, Pins("j3:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 3, Pins("j3:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  3, Pins("j3:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  4, Pins("j4:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  4, Pins("j4:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  4, Pins("j4:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  4, Pins("j4:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  4, Pins("j4:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  4, Pins("j4:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   4, Pins("j4:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   4, Pins("j4:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   4, Pins("j4:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   4, Pins("j4:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   4, Pins("j4:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 4, Pins("j4:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 4, Pins("j4:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  4, Pins("j4:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  5, Pins("j5:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  5, Pins("j5:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  5, Pins("j5:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  5, Pins("j5:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  5, Pins("j5:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  5, Pins("j5:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   5, Pins("j5:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   5, Pins("j5:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   5, Pins("j5:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   5, Pins("j5:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   5, Pins("j5:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 5, Pins("j5:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 5, Pins("j5:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  5, Pins("j5:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  6, Pins("j6:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  6, Pins("j6:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  6, Pins("j6:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  6, Pins("j6:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  6, Pins("j6:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  6, Pins("j6:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   6, Pins("j6:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   6, Pins("j6:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   6, Pins("j6:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   6, Pins("j6:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   6, Pins("j6:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 6, Pins("j6:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 6, Pins("j6:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  6, Pins("j6:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  7, Pins("j7:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  7, Pins("j7:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  7, Pins("j7:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  7, Pins("j7:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  7, Pins("j7:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  7, Pins("j7:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   7, Pins("j7:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   7, Pins("j7:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   7, Pins("j7:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   7, Pins("j7:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   7, Pins("j7:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 7, Pins("j7:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 7, Pins("j7:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  7, Pins("j7:14"), IOStandard("LVCMOS33")),
-
     ("panel_r0",  8, Pins("j8:0"), IOStandard("LVCMOS33")),
     ("panel_g0",  8, Pins("j8:1"), IOStandard("LVCMOS33")),
     ("panel_b0",  8, Pins("j8:2"), IOStandard("LVCMOS33")),
     ("panel_r1",  8, Pins("j8:4"), IOStandard("LVCMOS33")),
     ("panel_g1",  8, Pins("j8:5"), IOStandard("LVCMOS33")),
     ("panel_b1",  8, Pins("j8:6"), IOStandard("LVCMOS33")),
-    ("panel_e",   8, Pins("j8:7"), IOStandard("LVCMOS33")),
-    ("panel_a",   8, Pins("j8:8"), IOStandard("LVCMOS33")),
-    ("panel_b",   8, Pins("j8:9"), IOStandard("LVCMOS33")),
-    ("panel_c",   8, Pins("j8:10"), IOStandard("LVCMOS33")),
-    ("panel_d",   8, Pins("j8:11"), IOStandard("LVCMOS33")),
-    ("panel_clk", 8, Pins("j8:12"), IOStandard("LVCMOS33")),
-    ("panel_stb", 8, Pins("j8:13"), IOStandard("LVCMOS33")),
-    ("panel_oe",  8, Pins("j8:14"), IOStandard("LVCMOS33")),
 ]
 
 # CRG ----------------------------------------------------------------------------------------------
@@ -223,6 +152,18 @@ class BaseSoC(SoCMini):
         platform.add_source("udp_panel_writer.v")
         platform.add_extension(_gpios)
 
+        platform.add_extension([
+            ("shared_output", 0,
+                Subsignal("panel_e", Pins("j1:7")),
+                Subsignal("panel_a", Pins("j1:8")),
+                Subsignal("panel_b", Pins("j1:9")),
+                Subsignal("panel_c", Pins("j1:10")),
+                Subsignal("panel_d", Pins("j1:11")),
+                Subsignal("panel_clk", Pins("j1:12")),
+                Subsignal("panel_stb", Pins("j1:13")),
+                Subsignal("panel_oe", Pins("j1:14")),
+                IOStandard("LVCMOS33"))])
+
         # LED Panel --------------------------------------------------------------------------------
         s_shared_en = Signal(8)
         s_shared_addr = Signal(16)
@@ -273,15 +214,6 @@ class BaseSoC(SoCMini):
         j4r1 = platform.request("panel_r1", 4)
         j4g1 = platform.request("panel_g1", 4)
         j4b1 = platform.request("panel_b1", 4)
-        j4E = platform.request("panel_e", 4)
-        j4A = platform.request("panel_a", 4)
-        j4B = platform.request("panel_b", 4)
-        j4C = platform.request("panel_c", 4)
-        j4D = platform.request("panel_d", 4)
-        j4clk = platform.request("panel_clk", 4)
-        j4stb = platform.request("panel_stb", 4)
-        j4oe = platform.request("panel_oe", 4)
-
         # FIXME
         #self.panel_en = CSRStorage(size=4)
         #self.panel_addr = CSRStorage(size=16)
@@ -295,6 +227,21 @@ class BaseSoC(SoCMini):
         self.comb += j4r1.eq(s_j4r1)
         self.comb += j4g1.eq(s_j4g1)
         self.comb += j4b1.eq(s_j4b1)
+
+        self.comb += s_j4_ctrl_en.eq(s_shared_en[0])
+        self.comb += s_j4_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_j4_ctrl_wdat.eq(s_shared_wdat)
+
+        shared_output = platform.request('shared_output')
+        j4E = shared_output.panel_e
+        j4A = shared_output.panel_a
+        j4B = shared_output.panel_b
+        j4C = shared_output.panel_c
+        j4D = shared_output.panel_d
+        j4clk = shared_output.panel_clk
+        j4stb = shared_output.panel_stb
+        j4oe = shared_output.panel_oe
+
         self.comb += j4A.eq(s_j4a)
         self.comb += j4B.eq(s_j4b)
         self.comb += j4C.eq(s_j4c)
@@ -303,9 +250,6 @@ class BaseSoC(SoCMini):
         self.comb += j4clk.eq(s_j4clk)
         self.comb += j4stb.eq(s_j4stb)
         self.comb += j4oe.eq(s_j4oe)
-        self.comb += s_j4_ctrl_en.eq(s_shared_en[0])
-        self.comb += s_j4_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j4_ctrl_wdat.eq(s_shared_wdat)
 
         s_j3_ctrl_en = Signal()
         s_j3_ctrl_addr = Signal(16)
