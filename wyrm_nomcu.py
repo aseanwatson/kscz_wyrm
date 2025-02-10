@@ -26,57 +26,6 @@ from litex.build.generic_platform import *
 
 from litescope import LiteScopeAnalyzer
 
-_gpios = [
-    ("panel_r0",  1, Pins("j1:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  1, Pins("j1:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  1, Pins("j1:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  1, Pins("j1:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  1, Pins("j1:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  1, Pins("j1:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  2, Pins("j2:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  2, Pins("j2:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  2, Pins("j2:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  2, Pins("j2:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  2, Pins("j2:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  2, Pins("j2:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  3, Pins("j3:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  3, Pins("j3:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  3, Pins("j3:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  3, Pins("j3:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  3, Pins("j3:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  3, Pins("j3:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  4, Pins("j4:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  4, Pins("j4:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  4, Pins("j4:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  4, Pins("j4:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  4, Pins("j4:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  4, Pins("j4:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  5, Pins("j5:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  5, Pins("j5:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  5, Pins("j5:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  5, Pins("j5:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  5, Pins("j5:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  5, Pins("j5:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  6, Pins("j6:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  6, Pins("j6:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  6, Pins("j6:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  6, Pins("j6:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  6, Pins("j6:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  6, Pins("j6:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  7, Pins("j7:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  7, Pins("j7:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  7, Pins("j7:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  7, Pins("j7:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  7, Pins("j7:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  7, Pins("j7:6"), IOStandard("LVCMOS33")),
-    ("panel_r0",  8, Pins("j8:0"), IOStandard("LVCMOS33")),
-    ("panel_g0",  8, Pins("j8:1"), IOStandard("LVCMOS33")),
-    ("panel_b0",  8, Pins("j8:2"), IOStandard("LVCMOS33")),
-    ("panel_r1",  8, Pins("j8:4"), IOStandard("LVCMOS33")),
-    ("panel_g1",  8, Pins("j8:5"), IOStandard("LVCMOS33")),
-    ("panel_b1",  8, Pins("j8:6"), IOStandard("LVCMOS33")),
-]
-
 # CRG ----------------------------------------------------------------------------------------------
 
 class _CRG(LiteXModule):
@@ -150,7 +99,6 @@ class BaseSoC(SoCMini):
         # Extend Platform --------------------------------------------------------------------------
         platform.add_source("ledpanel.v")
         platform.add_source("udp_panel_writer.v")
-        platform.add_extension(_gpios)
 
         platform.add_extension([
             ("shared_output", 0,
@@ -163,6 +111,17 @@ class BaseSoC(SoCMini):
                 Subsignal("panel_stb", Pins("j1:13")),
                 Subsignal("panel_oe", Pins("j1:14")),
                 IOStandard("LVCMOS33"))])
+
+        for jumper in (1,2,3,4,5,6,7,8):
+            platform.add_extension([
+                ("rgb_output", jumper,
+                    Subsignal("panel_r0", Pins(f"j{jumper}:0")),
+                    Subsignal("panel_g0", Pins(f"j{jumper}:1")),
+                    Subsignal("panel_b0", Pins(f"j{jumper}:2")),
+                    Subsignal("panel_r1", Pins(f"j{jumper}:4")),
+                    Subsignal("panel_g1", Pins(f"j{jumper}:5")),
+                    Subsignal("panel_b1", Pins(f"j{jumper}:6")),
+                    IOStandard("LVCMOS33"))])
 
         # LED Panel --------------------------------------------------------------------------------
         s_shared_en = Signal(8)
@@ -208,13 +167,13 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j4oe
         )
 
-        j4r0 = platform.request("panel_r0", 4)
-        j4g0 = platform.request("panel_g0", 4)
-        j4b0 = platform.request("panel_b0", 4)
-        j4r1 = platform.request("panel_r1", 4)
-        j4g1 = platform.request("panel_g1", 4)
-        j4b1 = platform.request("panel_b1", 4)
-
+        rgb_output4 = platform.request('rgb_output', 4)
+        j4r0 = rgb_output4.panel_r0
+        j4g0 = rgb_output4.panel_g0
+        j4b0 = rgb_output4.panel_b0
+        j4r1 = rgb_output4.panel_r1
+        j4g1 = rgb_output4.panel_g1
+        j4b1 = rgb_output4.panel_b1
 
         self.comb += j4r0.eq(s_j4r0)
         self.comb += j4g0.eq(s_j4g0)
@@ -285,12 +244,13 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j3oe
         )
 
-        j3r0 = platform.request("panel_r0", 3)
-        j3g0 = platform.request("panel_g0", 3)
-        j3b0 = platform.request("panel_b0", 3)
-        j3r1 = platform.request("panel_r1", 3)
-        j3g1 = platform.request("panel_g1", 3)
-        j3b1 = platform.request("panel_b1", 3)
+        rgb_output3 = platform.request('rgb_output', 3)
+        j3r0 = rgb_output3.panel_r0
+        j3g0 = rgb_output3.panel_g0
+        j3b0 = rgb_output3.panel_b0
+        j3r1 = rgb_output3.panel_r1
+        j3g1 = rgb_output3.panel_g1
+        j3b1 = rgb_output3.panel_b1
 
         self.comb += j3r0.eq(s_j3r0)
         self.comb += j3g0.eq(s_j3g0)
@@ -342,12 +302,13 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j2oe
         )
 
-        j2r0 = platform.request("panel_r0", 2)
-        j2g0 = platform.request("panel_g0", 2)
-        j2b0 = platform.request("panel_b0", 2)
-        j2r1 = platform.request("panel_r1", 2)
-        j2g1 = platform.request("panel_g1", 2)
-        j2b1 = platform.request("panel_b1", 2)
+        rgb_output2 = platform.request('rgb_output', 2)
+        j2r0 = rgb_output2.panel_r0
+        j2g0 = rgb_output2.panel_g0
+        j2b0 = rgb_output2.panel_b0
+        j2r1 = rgb_output2.panel_r1
+        j2g1 = rgb_output2.panel_g1
+        j2b1 = rgb_output2.panel_b1
 
         self.comb += j2r0.eq(s_j2r0)
         self.comb += j2g0.eq(s_j2g0)
@@ -399,12 +360,13 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j1oe
         )
 
-        j1r0 = platform.request("panel_r0", 1)
-        j1g0 = platform.request("panel_g0", 1)
-        j1b0 = platform.request("panel_b0", 1)
-        j1r1 = platform.request("panel_r1", 1)
-        j1g1 = platform.request("panel_g1", 1)
-        j1b1 = platform.request("panel_b1", 1)
+        rgb_output1 = platform.request('rgb_output', 1)
+        j1r0 = rgb_output1.panel_r0
+        j1g0 = rgb_output1.panel_g0
+        j1b0 = rgb_output1.panel_b0
+        j1r1 = rgb_output1.panel_r1
+        j1g1 = rgb_output1.panel_g1
+        j1b1 = rgb_output1.panel_b1
 
         self.comb += j1r0.eq(s_j1r0)
         self.comb += j1g0.eq(s_j1g0)
@@ -456,12 +418,13 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j5oe
         )
 
-        j5r0 = platform.request("panel_r0", 5)
-        j5g0 = platform.request("panel_g0", 5)
-        j5b0 = platform.request("panel_b0", 5)
-        j5r1 = platform.request("panel_r1", 5)
-        j5g1 = platform.request("panel_g1", 5)
-        j5b1 = platform.request("panel_b1", 5)
+        rgb_output5 = platform.request('rgb_output', 5)
+        j5r0 = rgb_output5.panel_r0
+        j5g0 = rgb_output5.panel_g0
+        j5b0 = rgb_output5.panel_b0
+        j5r1 = rgb_output5.panel_r1
+        j5g1 = rgb_output5.panel_g1
+        j5b1 = rgb_output5.panel_b1
 
         self.comb += j5r0.eq(s_j5r0)
         self.comb += j5g0.eq(s_j5g0)
@@ -513,12 +476,13 @@ class BaseSoC(SoCMini):
             o_panel_oe      = s_j6oe
         )
 
-        j6r0 = platform.request("panel_r0",    6)
-        j6g0 = platform.request("panel_g0",    6)
-        j6b0 = platform.request("panel_b0",    6)
-        j6r1 = platform.request("panel_r1",    6)
-        j6g1 = platform.request("panel_g1",    6)
-        j6b1 = platform.request("panel_b1",    6)
+        rgb_output6 = platform.request('rgb_output', 6)
+        j6r0 = rgb_output6.panel_r0
+        j6g0 = rgb_output6.panel_g0
+        j6b0 = rgb_output6.panel_b0
+        j6r1 = rgb_output6.panel_r1
+        j6g1 = rgb_output6.panel_g1
+        j6b1 = rgb_output6.panel_b1
 
         self.comb += j6r0.eq(s_j6r0)
         self.comb += j6g0.eq(s_j6g0)
@@ -570,12 +534,13 @@ class BaseSoC(SoCMini):
             o_panel_oe      = s_j7oe
         )
 
-        j7r0 = platform.request("panel_r0",    7)
-        j7g0 = platform.request("panel_g0",    7)
-        j7b0 = platform.request("panel_b0",    7)
-        j7r1 = platform.request("panel_r1",    7)
-        j7g1 = platform.request("panel_g1",    7)
-        j7b1 = platform.request("panel_b1",    7)
+        rgb_output7 = platform.request('rgb_output', 7)
+        j7r0 = rgb_output7.panel_r0
+        j7g0 = rgb_output7.panel_g0
+        j7b0 = rgb_output7.panel_b0
+        j7r1 = rgb_output7.panel_r1
+        j7g1 = rgb_output7.panel_g1
+        j7b1 = rgb_output7.panel_b1
 
         self.comb += j7r0.eq(s_j7r0)
         self.comb += j7g0.eq(s_j7g0)
@@ -627,12 +592,13 @@ class BaseSoC(SoCMini):
             o_panel_oe      = s_j8oe
         )
 
-        j8r0 = platform.request("panel_r0",    8)
-        j8g0 = platform.request("panel_g0",    8)
-        j8b0 = platform.request("panel_b0",    8)
-        j8r1 = platform.request("panel_r1",    8)
-        j8g1 = platform.request("panel_g1",    8)
-        j8b1 = platform.request("panel_b1",    8)
+        rgb_output8 = platform.request("rgb_output", 8)
+        j8r0 = rgb_output8.panel_r0
+        j8g0 = rgb_output8.panel_g0
+        j8b0 = rgb_output8.panel_b0
+        j8r1 = rgb_output8.panel_r1
+        j8g1 = rgb_output8.panel_g1
+        j8b1 = rgb_output8.panel_b1
 
         self.comb += j8r0.eq(s_j8r0)
         self.comb += j8g0.eq(s_j8g0)
