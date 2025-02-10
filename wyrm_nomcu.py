@@ -264,20 +264,20 @@ class BaseSoC(SoCMini):
         platform.add_source("ledpanel.v")
 
         platform.add_extension(_gpios)
-        j4r0 = platform.request("panel_r0", 4);
-        j4g0 = platform.request("panel_g0", 4);
-        j4b0 = platform.request("panel_b0", 4);
-        j4r1 = platform.request("panel_r1", 4);
-        j4g1 = platform.request("panel_g1", 4);
-        j4b1 = platform.request("panel_b1", 4);
-        j4E = platform.request("panel_e", 4);
-        j4A = platform.request("panel_a", 4);
-        j4B = platform.request("panel_b", 4);
-        j4C = platform.request("panel_c", 4);
-        j4D = platform.request("panel_d", 4);
-        j4clk = platform.request("panel_clk", 4);
-        j4stb = platform.request("panel_stb", 4);
-        j4oe = platform.request("panel_oe", 4);
+        j4r0 = platform.request("panel_r0", 4)
+        j4g0 = platform.request("panel_g0", 4)
+        j4b0 = platform.request("panel_b0", 4)
+        j4r1 = platform.request("panel_r1", 4)
+        j4g1 = platform.request("panel_g1", 4)
+        j4b1 = platform.request("panel_b1", 4)
+        j4E = platform.request("panel_e", 4)
+        j4A = platform.request("panel_a", 4)
+        j4B = platform.request("panel_b", 4)
+        j4C = platform.request("panel_c", 4)
+        j4D = platform.request("panel_d", 4)
+        j4clk = platform.request("panel_clk", 4)
+        j4stb = platform.request("panel_stb", 4)
+        j4oe = platform.request("panel_oe", 4)
 
         # FIXME
         #self.panel_en = CSRStorage(size=4)
@@ -343,20 +343,20 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j3oe
         )
 
-        j3r0 = platform.request("panel_r0", 3);
-        j3g0 = platform.request("panel_g0", 3);
-        j3b0 = platform.request("panel_b0", 3);
-        j3r1 = platform.request("panel_r1", 3);
-        j3g1 = platform.request("panel_g1", 3);
-        j3b1 = platform.request("panel_b1", 3);
-        #j3E = platform.request("panel_e", 3);
-        #j3A = platform.request("panel_a", 3);
-        #j3B = platform.request("panel_b", 3);
-        #j3C = platform.request("panel_c", 3);
-        #j3D = platform.request("panel_d", 3);
-        #j3clk = platform.request("panel_clk", 3);
-        #j3stb = platform.request("panel_stb", 3);
-        #j3oe = platform.request("panel_oe", 3);
+        j3r0 = platform.request("panel_r0", 3)
+        j3g0 = platform.request("panel_g0", 3)
+        j3b0 = platform.request("panel_b0", 3)
+        j3r1 = platform.request("panel_r1", 3)
+        j3g1 = platform.request("panel_g1", 3)
+        j3b1 = platform.request("panel_b1", 3)
+        #j3E = platform.request("panel_e", 3)
+        #j3A = platform.request("panel_a", 3)
+        #j3B = platform.request("panel_b", 3)
+        #j3C = platform.request("panel_c", 3)
+        #j3D = platform.request("panel_d", 3)
+        #j3clk = platform.request("panel_clk", 3)
+        #j3stb = platform.request("panel_stb", 3)
+        #j3oe = platform.request("panel_oe", 3)
 
         self.comb += j3r0.eq(s_j3r0)
         self.comb += j3g0.eq(s_j3g0)
@@ -415,20 +415,20 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j2oe
         )
 
-        j2r0 = platform.request("panel_r0", 2);
-        j2g0 = platform.request("panel_g0", 2);
-        j2b0 = platform.request("panel_b0", 2);
-        j2r1 = platform.request("panel_r1", 2);
-        j2g1 = platform.request("panel_g1", 2);
-        j2b1 = platform.request("panel_b1", 2);
-        #j2E = platform.request("panel_e", 2);
-        #j2A = platform.request("panel_a", 2);
-        #j2B = platform.request("panel_b", 2);
-        #j2C = platform.request("panel_c", 2);
-        #j2D = platform.request("panel_d", 2);
-        #j2clk = platform.request("panel_clk", 2);
-        #j2stb = platform.request("panel_stb", 2);
-        #j2oe = platform.request("panel_oe", 2);
+        j2r0 = platform.request("panel_r0", 2)
+        j2g0 = platform.request("panel_g0", 2)
+        j2b0 = platform.request("panel_b0", 2)
+        j2r1 = platform.request("panel_r1", 2)
+        j2g1 = platform.request("panel_g1", 2)
+        j2b1 = platform.request("panel_b1", 2)
+        #j2E = platform.request("panel_e", 2)
+        #j2A = platform.request("panel_a", 2)
+        #j2B = platform.request("panel_b", 2)
+        #j2C = platform.request("panel_c", 2)
+        #j2D = platform.request("panel_d", 2)
+        #j2clk = platform.request("panel_clk", 2)
+        #j2stb = platform.request("panel_stb", 2)
+        #j2oe = platform.request("panel_oe", 2)
 
         self.comb += j2r0.eq(s_j2r0)
         self.comb += j2g0.eq(s_j2g0)
@@ -487,20 +487,20 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j1oe
         )
 
-        j1r0 = platform.request("panel_r0", 1);
-        j1g0 = platform.request("panel_g0", 1);
-        j1b0 = platform.request("panel_b0", 1);
-        j1r1 = platform.request("panel_r1", 1);
-        j1g1 = platform.request("panel_g1", 1);
-        j1b1 = platform.request("panel_b1", 1);
-        #j1E = platform.request("panel_e", 1);
-        #j1A = platform.request("panel_a", 1);
-        #j1B = platform.request("panel_b", 1);
-        #j1C = platform.request("panel_c", 1);
-        #j1D = platform.request("panel_d", 1);
-        #j1clk = platform.request("panel_clk", 1);
-        #j1stb = platform.request("panel_stb", 1);
-        #j1oe = platform.request("panel_oe", 1);
+        j1r0 = platform.request("panel_r0", 1)
+        j1g0 = platform.request("panel_g0", 1)
+        j1b0 = platform.request("panel_b0", 1)
+        j1r1 = platform.request("panel_r1", 1)
+        j1g1 = platform.request("panel_g1", 1)
+        j1b1 = platform.request("panel_b1", 1)
+        #j1E = platform.request("panel_e", 1)
+        #j1A = platform.request("panel_a", 1)
+        #j1B = platform.request("panel_b", 1)
+        #j1C = platform.request("panel_c", 1)
+        #j1D = platform.request("panel_d", 1)
+        #j1clk = platform.request("panel_clk", 1)
+        #j1stb = platform.request("panel_stb", 1)
+        #j1oe = platform.request("panel_oe", 1)
 
         self.comb += j1r0.eq(s_j1r0)
         self.comb += j1g0.eq(s_j1g0)
@@ -559,20 +559,20 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_j5oe
         )
 
-        j5r0 = platform.request("panel_r0", 5);
-        j5g0 = platform.request("panel_g0", 5);
-        j5b0 = platform.request("panel_b0", 5);
-        j5r1 = platform.request("panel_r1", 5);
-        j5g1 = platform.request("panel_g1", 5);
-        j5b1 = platform.request("panel_b1", 5);
-        #j5E = platform.request("panel_e", 5);
-        #j5A = platform.request("panel_a", 5);
-        #j5B = platform.request("panel_b", 5);
-        #j5C = platform.request("panel_c", 5);
-        #j5D = platform.request("panel_d", 5);
-        #j5clk = platform.request("panel_clk", 5);
-        #j5stb = platform.request("panel_stb", 5);
-        #j5oe = platform.request("panel_oe", 5);
+        j5r0 = platform.request("panel_r0", 5)
+        j5g0 = platform.request("panel_g0", 5)
+        j5b0 = platform.request("panel_b0", 5)
+        j5r1 = platform.request("panel_r1", 5)
+        j5g1 = platform.request("panel_g1", 5)
+        j5b1 = platform.request("panel_b1", 5)
+        #j5E = platform.request("panel_e", 5)
+        #j5A = platform.request("panel_a", 5)
+        #j5B = platform.request("panel_b", 5)
+        #j5C = platform.request("panel_c", 5)
+        #j5D = platform.request("panel_d", 5)
+        #j5clk = platform.request("panel_clk", 5)
+        #j5stb = platform.request("panel_stb", 5)
+        #j5oe = platform.request("panel_oe", 5)
 
         self.comb += j5r0.eq(s_j5r0)
         self.comb += j5g0.eq(s_j5g0)
@@ -631,20 +631,20 @@ class BaseSoC(SoCMini):
             o_panel_oe      = s_j6oe
         )
 
-        j6r0 = platform.request("panel_r0",    6);
-        j6g0 = platform.request("panel_g0",    6);
-        j6b0 = platform.request("panel_b0",    6);
-        j6r1 = platform.request("panel_r1",    6);
-        j6g1 = platform.request("panel_g1",    6);
-        j6b1 = platform.request("panel_b1",    6);
-        #j6E = platform.request("panel_e",     6);
-        #j6A = platform.request("panel_a",     6);
-        #j6B = platform.request("panel_b",     6);
-        #j6C = platform.request("panel_c",     6);
-        #j6D = platform.request("panel_d",     6);
-        #j6clk = platform.request("panel_clk", 6);
-        #j6stb = platform.request("panel_stb", 6);
-        #j6oe = platform.request("panel_oe",   6);
+        j6r0 = platform.request("panel_r0",    6)
+        j6g0 = platform.request("panel_g0",    6)
+        j6b0 = platform.request("panel_b0",    6)
+        j6r1 = platform.request("panel_r1",    6)
+        j6g1 = platform.request("panel_g1",    6)
+        j6b1 = platform.request("panel_b1",    6)
+        #j6E = platform.request("panel_e",     6)
+        #j6A = platform.request("panel_a",     6)
+        #j6B = platform.request("panel_b",     6)
+        #j6C = platform.request("panel_c",     6)
+        #j6D = platform.request("panel_d",     6)
+        #j6clk = platform.request("panel_clk", 6)
+        #j6stb = platform.request("panel_stb", 6)
+        #j6oe = platform.request("panel_oe",   6)
 
         self.comb += j6r0.eq(s_j6r0)
         self.comb += j6g0.eq(s_j6g0)
@@ -703,20 +703,20 @@ class BaseSoC(SoCMini):
             o_panel_oe      = s_j7oe
         )
 
-        j7r0 = platform.request("panel_r0",    7);
-        j7g0 = platform.request("panel_g0",    7);
-        j7b0 = platform.request("panel_b0",    7);
-        j7r1 = platform.request("panel_r1",    7);
-        j7g1 = platform.request("panel_g1",    7);
-        j7b1 = platform.request("panel_b1",    7);
-        #j7E = platform.request("panel_e",     7);
-        #j7A = platform.request("panel_a",     7);
-        #j7B = platform.request("panel_b",     7);
-        #j7C = platform.request("panel_c",     7);
-        #j7D = platform.request("panel_d",     7);
-        #j7clk = platform.request("panel_clk", 7);
-        #j7stb = platform.request("panel_stb", 7);
-        #j7oe = platform.request("panel_oe",   7);
+        j7r0 = platform.request("panel_r0",    7)
+        j7g0 = platform.request("panel_g0",    7)
+        j7b0 = platform.request("panel_b0",    7)
+        j7r1 = platform.request("panel_r1",    7)
+        j7g1 = platform.request("panel_g1",    7)
+        j7b1 = platform.request("panel_b1",    7)
+        #j7E = platform.request("panel_e",     7)
+        #j7A = platform.request("panel_a",     7)
+        #j7B = platform.request("panel_b",     7)
+        #j7C = platform.request("panel_c",     7)
+        #j7D = platform.request("panel_d",     7)
+        #j7clk = platform.request("panel_clk", 7)
+        #j7stb = platform.request("panel_stb", 7)
+        #j7oe = platform.request("panel_oe",   7)
 
         self.comb += j7r0.eq(s_j7r0)
         self.comb += j7g0.eq(s_j7g0)
@@ -775,20 +775,20 @@ class BaseSoC(SoCMini):
             o_panel_oe      = s_j8oe
         )
 
-        j8r0 = platform.request("panel_r0",    8);
-        j8g0 = platform.request("panel_g0",    8);
-        j8b0 = platform.request("panel_b0",    8);
-        j8r1 = platform.request("panel_r1",    8);
-        j8g1 = platform.request("panel_g1",    8);
-        j8b1 = platform.request("panel_b1",    8);
-        #j8E = platform.request("panel_e",     8);
-        #j8A = platform.request("panel_a",     8);
-        #j8B = platform.request("panel_b",     8);
-        #j8C = platform.request("panel_c",     8);
-        #j8D = platform.request("panel_d",     8);
-        #j8clk = platform.request("panel_clk", 8);
-        #j8stb = platform.request("panel_stb", 8);
-        #j8oe = platform.request("panel_oe",   8);
+        j8r0 = platform.request("panel_r0",    8)
+        j8g0 = platform.request("panel_g0",    8)
+        j8b0 = platform.request("panel_b0",    8)
+        j8r1 = platform.request("panel_r1",    8)
+        j8g1 = platform.request("panel_g1",    8)
+        j8b1 = platform.request("panel_b1",    8)
+        #j8E = platform.request("panel_e",     8)
+        #j8A = platform.request("panel_a",     8)
+        #j8B = platform.request("panel_b",     8)
+        #j8C = platform.request("panel_c",     8)
+        #j8D = platform.request("panel_d",     8)
+        #j8clk = platform.request("panel_clk", 8)
+        #j8stb = platform.request("panel_stb", 8)
+        #j8oe = platform.request("panel_oe",   8)
 
         self.comb += j8r0.eq(s_j8r0)
         self.comb += j8g0.eq(s_j8g0)
@@ -844,7 +844,7 @@ class BaseSoC(SoCMini):
         udp_port = udp_core.udp.crossbar.get_port(2025, dw=32, cd="sys")
         self.comb += udp_port.source.ready.eq(1)
 
-        udp_rx = udp_core.udp.rx.source;
+        udp_rx = udp_core.udp.rx.source
 
         s_udp_reset = Signal()
         s_udp_source_valid = Signal()
@@ -885,8 +885,8 @@ class BaseSoC(SoCMini):
         self.sync += s_udp_source_data.eq(udp_rx.payload.data)
         self.sync += s_udp_source_error.eq(udp_rx.payload.error)
 
-        s_test_port = Signal();
-        self.comb += s_test_port.eq((udp_core.udp.rx.source.param.dst_port[15] == 1) & udp_core.udp.rx.source.valid);
+        s_test_port = Signal()
+        self.comb += s_test_port.eq((udp_core.udp.rx.source.param.dst_port[15] == 1) & udp_core.udp.rx.source.valid)
         led = platform.request("user_led_n", 0)
         self.comb += led.eq(s_udp_led)
 
