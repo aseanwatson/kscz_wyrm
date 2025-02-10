@@ -94,7 +94,7 @@ class BaseSoC(SoCMini):
         with_spi_flash   = False,
         rom              = None,
         **kwargs):
-        platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
+        self.platform = platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
         # Extend Platform --------------------------------------------------------------------------
         platform.add_source("ledpanel.v")
@@ -124,492 +124,24 @@ class BaseSoC(SoCMini):
                     IOStandard("LVCMOS33"))])
 
         # LED Panel --------------------------------------------------------------------------------
-        s_shared_en = Signal(8)
-        s_shared_addr = Signal(16)
-        s_shared_wdat = Signal(24)
+        self.ctrl_signals = ctrl_signals = Record([
+            ("en", 8),
+            ("addr", 16),
+            ("wdat", 24),
+        ])
 
-        s_j4_ctrl_en = Signal()
-        s_j4_ctrl_addr = Signal(16)
-        s_j4_ctrl_wdat = Signal(24)
-        s_j4r0 = Signal()
-        s_j4g0 = Signal()
-        s_j4b0 = Signal()
-        s_j4r1 = Signal()
-        s_j4g1 = Signal()
-        s_j4b1 = Signal()
-        s_j4a = Signal()
-        s_j4b = Signal()
-        s_j4c = Signal()
-        s_j4d = Signal()
-        s_j4e = Signal()
-        s_j4clk = Signal()
-        s_j4stb = Signal()
-        s_j4oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk = ClockSignal(),
-            i_ctrl_en = s_j4_ctrl_en,
-            i_ctrl_addr = s_j4_ctrl_addr,
-            i_ctrl_wdat = s_j4_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0 = s_j4r0,
-            o_panel_g0 = s_j4g0,
-            o_panel_b0 = s_j4b0,
-            o_panel_r1 = s_j4r1,
-            o_panel_g1 = s_j4g1,
-            o_panel_b1 = s_j4b1,
-            o_panel_a = s_j4a,
-            o_panel_b = s_j4b,
-            o_panel_c = s_j4c,
-            o_panel_d = s_j4d,
-            o_panel_e = s_j4e,
-            o_panel_clk = s_j4clk,
-            o_panel_stb = s_j4stb,
-            o_panel_oe = s_j4oe
-        )
+        s_shared_en = self.ctrl_signals.en
+        s_shared_addr = self.ctrl_signals.addr
+        s_shared_wdat = self.ctrl_signals.wdat
 
-        rgb_output4 = platform.request('rgb_output', 4)
-        j4r0 = rgb_output4.panel_r0
-        j4g0 = rgb_output4.panel_g0
-        j4b0 = rgb_output4.panel_b0
-        j4r1 = rgb_output4.panel_r1
-        j4g1 = rgb_output4.panel_g1
-        j4b1 = rgb_output4.panel_b1
-
-        self.comb += j4r0.eq(s_j4r0)
-        self.comb += j4g0.eq(s_j4g0)
-        self.comb += j4b0.eq(s_j4b0)
-        self.comb += j4r1.eq(s_j4r1)
-        self.comb += j4g1.eq(s_j4g1)
-        self.comb += j4b1.eq(s_j4b1)
-
-        self.comb += s_j4_ctrl_en.eq(s_shared_en[0])
-        self.comb += s_j4_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j4_ctrl_wdat.eq(s_shared_wdat)
-
-        shared_output = platform.request('shared_output')
-        j4E = shared_output.panel_e
-        j4A = shared_output.panel_a
-        j4B = shared_output.panel_b
-        j4C = shared_output.panel_c
-        j4D = shared_output.panel_d
-        j4clk = shared_output.panel_clk
-        j4stb = shared_output.panel_stb
-        j4oe = shared_output.panel_oe
-
-        self.comb += j4A.eq(s_j4a)
-        self.comb += j4B.eq(s_j4b)
-        self.comb += j4C.eq(s_j4c)
-        self.comb += j4D.eq(s_j4d)
-        self.comb += j4E.eq(s_j4e)
-        self.comb += j4clk.eq(s_j4clk)
-        self.comb += j4stb.eq(s_j4stb)
-        self.comb += j4oe.eq(s_j4oe)
-
-        s_j3_ctrl_en = Signal()
-        s_j3_ctrl_addr = Signal(16)
-        s_j3_ctrl_wdat = Signal(24)
-        s_j3r0 = Signal()
-        s_j3g0 = Signal()
-        s_j3b0 = Signal()
-        s_j3r1 = Signal()
-        s_j3g1 = Signal()
-        s_j3b1 = Signal()
-        s_j3a = Signal()
-        s_j3b = Signal()
-        s_j3c = Signal()
-        s_j3d = Signal()
-        s_j3e = Signal()
-        s_j3clk = Signal()
-        s_j3stb = Signal()
-        s_j3oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk = ClockSignal(),
-            i_ctrl_en = s_j3_ctrl_en,
-            i_ctrl_addr = s_j3_ctrl_addr,
-            i_ctrl_wdat = s_j3_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0 = s_j3r0,
-            o_panel_g0 = s_j3g0,
-            o_panel_b0 = s_j3b0,
-            o_panel_r1 = s_j3r1,
-            o_panel_g1 = s_j3g1,
-            o_panel_b1 = s_j3b1,
-            o_panel_a = s_j3a,
-            o_panel_b = s_j3b,
-            o_panel_c = s_j3c,
-            o_panel_d = s_j3d,
-            o_panel_e = s_j3e,
-            o_panel_clk = s_j3clk,
-            o_panel_stb = s_j3stb,
-            o_panel_oe = s_j3oe
-        )
-
-        rgb_output3 = platform.request('rgb_output', 3)
-        j3r0 = rgb_output3.panel_r0
-        j3g0 = rgb_output3.panel_g0
-        j3b0 = rgb_output3.panel_b0
-        j3r1 = rgb_output3.panel_r1
-        j3g1 = rgb_output3.panel_g1
-        j3b1 = rgb_output3.panel_b1
-
-        self.comb += j3r0.eq(s_j3r0)
-        self.comb += j3g0.eq(s_j3g0)
-        self.comb += j3b0.eq(s_j3b0)
-        self.comb += j3r1.eq(s_j3r1)
-        self.comb += j3g1.eq(s_j3g1)
-        self.comb += j3b1.eq(s_j3b1)
-
-        self.comb += s_j3_ctrl_en.eq(s_shared_en[1])
-        self.comb += s_j3_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j3_ctrl_wdat.eq(s_shared_wdat)
-
-        s_j2_ctrl_en = Signal()
-        s_j2_ctrl_addr = Signal(16)
-        s_j2_ctrl_wdat = Signal(24)
-        s_j2r0 = Signal()
-        s_j2g0 = Signal()
-        s_j2b0 = Signal()
-        s_j2r1 = Signal()
-        s_j2g1 = Signal()
-        s_j2b1 = Signal()
-        s_j2a = Signal()
-        s_j2b = Signal()
-        s_j2c = Signal()
-        s_j2d = Signal()
-        s_j2e = Signal()
-        s_j2clk = Signal()
-        s_j2stb = Signal()
-        s_j2oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk = ClockSignal(),
-            i_ctrl_en = s_j2_ctrl_en,
-            i_ctrl_addr = s_j2_ctrl_addr,
-            i_ctrl_wdat = s_j2_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0 = s_j2r0,
-            o_panel_g0 = s_j2g0,
-            o_panel_b0 = s_j2b0,
-            o_panel_r1 = s_j2r1,
-            o_panel_g1 = s_j2g1,
-            o_panel_b1 = s_j2b1,
-            o_panel_a = s_j2a,
-            o_panel_b = s_j2b,
-            o_panel_c = s_j2c,
-            o_panel_d = s_j2d,
-            o_panel_e = s_j2e,
-            o_panel_clk = s_j2clk,
-            o_panel_stb = s_j2stb,
-            o_panel_oe = s_j2oe
-        )
-
-        rgb_output2 = platform.request('rgb_output', 2)
-        j2r0 = rgb_output2.panel_r0
-        j2g0 = rgb_output2.panel_g0
-        j2b0 = rgb_output2.panel_b0
-        j2r1 = rgb_output2.panel_r1
-        j2g1 = rgb_output2.panel_g1
-        j2b1 = rgb_output2.panel_b1
-
-        self.comb += j2r0.eq(s_j2r0)
-        self.comb += j2g0.eq(s_j2g0)
-        self.comb += j2b0.eq(s_j2b0)
-        self.comb += j2r1.eq(s_j2r1)
-        self.comb += j2g1.eq(s_j2g1)
-        self.comb += j2b1.eq(s_j2b1)
-
-        self.comb += s_j2_ctrl_en.eq(s_shared_en[2])
-        self.comb += s_j2_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j2_ctrl_wdat.eq(s_shared_wdat)
-
-        s_j1_ctrl_en = Signal()
-        s_j1_ctrl_addr = Signal(16)
-        s_j1_ctrl_wdat = Signal(24)
-        s_j1r0 = Signal()
-        s_j1g0 = Signal()
-        s_j1b0 = Signal()
-        s_j1r1 = Signal()
-        s_j1g1 = Signal()
-        s_j1b1 = Signal()
-        s_j1a = Signal()
-        s_j1b = Signal()
-        s_j1c = Signal()
-        s_j1d = Signal()
-        s_j1e = Signal()
-        s_j1clk = Signal()
-        s_j1stb = Signal()
-        s_j1oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk = ClockSignal(),
-            i_ctrl_en = s_j1_ctrl_en,
-            i_ctrl_addr = s_j1_ctrl_addr,
-            i_ctrl_wdat = s_j1_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0 = s_j1r0,
-            o_panel_g0 = s_j1g0,
-            o_panel_b0 = s_j1b0,
-            o_panel_r1 = s_j1r1,
-            o_panel_g1 = s_j1g1,
-            o_panel_b1 = s_j1b1,
-            o_panel_a = s_j1a,
-            o_panel_b = s_j1b,
-            o_panel_c = s_j1c,
-            o_panel_d = s_j1d,
-            o_panel_e = s_j1e,
-            o_panel_clk = s_j1clk,
-            o_panel_stb = s_j1stb,
-            o_panel_oe = s_j1oe
-        )
-
-        rgb_output1 = platform.request('rgb_output', 1)
-        j1r0 = rgb_output1.panel_r0
-        j1g0 = rgb_output1.panel_g0
-        j1b0 = rgb_output1.panel_b0
-        j1r1 = rgb_output1.panel_r1
-        j1g1 = rgb_output1.panel_g1
-        j1b1 = rgb_output1.panel_b1
-
-        self.comb += j1r0.eq(s_j1r0)
-        self.comb += j1g0.eq(s_j1g0)
-        self.comb += j1b0.eq(s_j1b0)
-        self.comb += j1r1.eq(s_j1r1)
-        self.comb += j1g1.eq(s_j1g1)
-        self.comb += j1b1.eq(s_j1b1)
-
-        self.comb += s_j1_ctrl_en.eq(s_shared_en[3])
-        self.comb += s_j1_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j1_ctrl_wdat.eq(s_shared_wdat)
-
-        s_j5_ctrl_en = Signal()
-        s_j5_ctrl_addr = Signal(16)
-        s_j5_ctrl_wdat = Signal(24)
-        s_j5r0 = Signal()
-        s_j5g0 = Signal()
-        s_j5b0 = Signal()
-        s_j5r1 = Signal()
-        s_j5g1 = Signal()
-        s_j5b1 = Signal()
-        s_j5a = Signal()
-        s_j5b = Signal()
-        s_j5c = Signal()
-        s_j5d = Signal()
-        s_j5e = Signal()
-        s_j5clk = Signal()
-        s_j5stb = Signal()
-        s_j5oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk = ClockSignal(),
-            i_ctrl_en = s_j5_ctrl_en,
-            i_ctrl_addr = s_j5_ctrl_addr,
-            i_ctrl_wdat = s_j5_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0 = s_j5r0,
-            o_panel_g0 = s_j5g0,
-            o_panel_b0 = s_j5b0,
-            o_panel_r1 = s_j5r1,
-            o_panel_g1 = s_j5g1,
-            o_panel_b1 = s_j5b1,
-            o_panel_a = s_j5a,
-            o_panel_b = s_j5b,
-            o_panel_c = s_j5c,
-            o_panel_d = s_j5d,
-            o_panel_e = s_j5e,
-            o_panel_clk = s_j5clk,
-            o_panel_stb = s_j5stb,
-            o_panel_oe = s_j5oe
-        )
-
-        rgb_output5 = platform.request('rgb_output', 5)
-        j5r0 = rgb_output5.panel_r0
-        j5g0 = rgb_output5.panel_g0
-        j5b0 = rgb_output5.panel_b0
-        j5r1 = rgb_output5.panel_r1
-        j5g1 = rgb_output5.panel_g1
-        j5b1 = rgb_output5.panel_b1
-
-        self.comb += j5r0.eq(s_j5r0)
-        self.comb += j5g0.eq(s_j5g0)
-        self.comb += j5b0.eq(s_j5b0)
-        self.comb += j5r1.eq(s_j5r1)
-        self.comb += j5g1.eq(s_j5g1)
-        self.comb += j5b1.eq(s_j5b1)
-
-        self.comb += s_j5_ctrl_en.eq(s_shared_en[4])
-        self.comb += s_j5_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j5_ctrl_wdat.eq(s_shared_wdat)
-
-        s_j6_ctrl_en = Signal()
-        s_j6_ctrl_addr = Signal(16)
-        s_j6_ctrl_wdat = Signal(24)
-        s_j6r0 = Signal()
-        s_j6g0 = Signal()
-        s_j6b0 = Signal()
-        s_j6r1 = Signal()
-        s_j6g1 = Signal()
-        s_j6b1 = Signal()
-        s_j6a = Signal()
-        s_j6b = Signal()
-        s_j6c = Signal()
-        s_j6d = Signal()
-        s_j6e = Signal()
-        s_j6clk = Signal()
-        s_j6stb = Signal()
-        s_j6oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk      = ClockSignal(),
-            i_ctrl_en       = s_j6_ctrl_en,
-            i_ctrl_addr     = s_j6_ctrl_addr,
-            i_ctrl_wdat     = s_j6_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0      = s_j6r0,
-            o_panel_g0      = s_j6g0,
-            o_panel_b0      = s_j6b0,
-            o_panel_r1      = s_j6r1,
-            o_panel_g1      = s_j6g1,
-            o_panel_b1      = s_j6b1,
-            o_panel_a       = s_j6a,
-            o_panel_b       = s_j6b,
-            o_panel_c       = s_j6c,
-            o_panel_d       = s_j6d,
-            o_panel_e       = s_j6e,
-            o_panel_clk     = s_j6clk,
-            o_panel_stb     = s_j6stb,
-            o_panel_oe      = s_j6oe
-        )
-
-        rgb_output6 = platform.request('rgb_output', 6)
-        j6r0 = rgb_output6.panel_r0
-        j6g0 = rgb_output6.panel_g0
-        j6b0 = rgb_output6.panel_b0
-        j6r1 = rgb_output6.panel_r1
-        j6g1 = rgb_output6.panel_g1
-        j6b1 = rgb_output6.panel_b1
-
-        self.comb += j6r0.eq(s_j6r0)
-        self.comb += j6g0.eq(s_j6g0)
-        self.comb += j6b0.eq(s_j6b0)
-        self.comb += j6r1.eq(s_j6r1)
-        self.comb += j6g1.eq(s_j6g1)
-        self.comb += j6b1.eq(s_j6b1)
-
-        self.comb += s_j6_ctrl_en.eq(s_shared_en[4])
-        self.comb += s_j6_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j6_ctrl_wdat.eq(s_shared_wdat)
-
-        s_j7_ctrl_en = Signal()
-        s_j7_ctrl_addr = Signal(16)
-        s_j7_ctrl_wdat = Signal(24)
-        s_j7r0 = Signal()
-        s_j7g0 = Signal()
-        s_j7b0 = Signal()
-        s_j7r1 = Signal()
-        s_j7g1 = Signal()
-        s_j7b1 = Signal()
-        s_j7a = Signal()
-        s_j7b = Signal()
-        s_j7c = Signal()
-        s_j7d = Signal()
-        s_j7e = Signal()
-        s_j7clk = Signal()
-        s_j7stb = Signal()
-        s_j7oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk      = ClockSignal(),
-            i_ctrl_en       = s_j7_ctrl_en,
-            i_ctrl_addr     = s_j7_ctrl_addr,
-            i_ctrl_wdat     = s_j7_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0      = s_j7r0,
-            o_panel_g0      = s_j7g0,
-            o_panel_b0      = s_j7b0,
-            o_panel_r1      = s_j7r1,
-            o_panel_g1      = s_j7g1,
-            o_panel_b1      = s_j7b1,
-            o_panel_a       = s_j7a,
-            o_panel_b       = s_j7b,
-            o_panel_c       = s_j7c,
-            o_panel_d       = s_j7d,
-            o_panel_e       = s_j7e,
-            o_panel_clk     = s_j7clk,
-            o_panel_stb     = s_j7stb,
-            o_panel_oe      = s_j7oe
-        )
-
-        rgb_output7 = platform.request('rgb_output', 7)
-        j7r0 = rgb_output7.panel_r0
-        j7g0 = rgb_output7.panel_g0
-        j7b0 = rgb_output7.panel_b0
-        j7r1 = rgb_output7.panel_r1
-        j7g1 = rgb_output7.panel_g1
-        j7b1 = rgb_output7.panel_b1
-
-        self.comb += j7r0.eq(s_j7r0)
-        self.comb += j7g0.eq(s_j7g0)
-        self.comb += j7b0.eq(s_j7b0)
-        self.comb += j7r1.eq(s_j7r1)
-        self.comb += j7g1.eq(s_j7g1)
-        self.comb += j7b1.eq(s_j7b1)
-
-        self.comb += s_j7_ctrl_en.eq(s_shared_en[4])
-        self.comb += s_j7_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j7_ctrl_wdat.eq(s_shared_wdat)
-
-        s_j8_ctrl_en = Signal()
-        s_j8_ctrl_addr = Signal(16)
-        s_j8_ctrl_wdat = Signal(24)
-        s_j8r0 = Signal()
-        s_j8g0 = Signal()
-        s_j8b0 = Signal()
-        s_j8r1 = Signal()
-        s_j8g1 = Signal()
-        s_j8b1 = Signal()
-        s_j8a = Signal()
-        s_j8b = Signal()
-        s_j8c = Signal()
-        s_j8d = Signal()
-        s_j8e = Signal()
-        s_j8clk = Signal()
-        s_j8stb = Signal()
-        s_j8oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk      = ClockSignal(),
-            i_ctrl_en       = s_j8_ctrl_en,
-            i_ctrl_addr     = s_j8_ctrl_addr,
-            i_ctrl_wdat     = s_j8_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0      = s_j8r0,
-            o_panel_g0      = s_j8g0,
-            o_panel_b0      = s_j8b0,
-            o_panel_r1      = s_j8r1,
-            o_panel_g1      = s_j8g1,
-            o_panel_b1      = s_j8b1,
-            o_panel_a       = s_j8a,
-            o_panel_b       = s_j8b,
-            o_panel_c       = s_j8c,
-            o_panel_d       = s_j8d,
-            o_panel_e       = s_j8e,
-            o_panel_clk     = s_j8clk,
-            o_panel_stb     = s_j8stb,
-            o_panel_oe      = s_j8oe
-        )
-
-        rgb_output8 = platform.request("rgb_output", 8)
-        j8r0 = rgb_output8.panel_r0
-        j8g0 = rgb_output8.panel_g0
-        j8b0 = rgb_output8.panel_b0
-        j8r1 = rgb_output8.panel_r1
-        j8g1 = rgb_output8.panel_g1
-        j8b1 = rgb_output8.panel_b1
-
-        self.comb += j8r0.eq(s_j8r0)
-        self.comb += j8g0.eq(s_j8g0)
-        self.comb += j8b0.eq(s_j8b0)
-        self.comb += j8r1.eq(s_j8r1)
-        self.comb += j8g1.eq(s_j8g1)
-        self.comb += j8b1.eq(s_j8b1)
-
-        self.comb += s_j8_ctrl_en.eq(s_shared_en[4])
-        self.comb += s_j8_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_j8_ctrl_wdat.eq(s_shared_wdat)
+        self.add_ledpanel(jumper=4, select=0, main_panel=True)
+        self.add_ledpanel(jumper=3, select=1)
+        self.add_ledpanel(jumper=2, select=2)
+        self.add_ledpanel(jumper=1, select=3)
+        self.add_ledpanel(jumper=5, select=4)
+        self.add_ledpanel(jumper=6, select=4) # review select=5?
+        self.add_ledpanel(jumper=7, select=4) # review select=6?
+        self.add_ledpanel(jumper=8, select=4) # review select=7?
 
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, int(sys_clk_freq),
@@ -700,6 +232,88 @@ class BaseSoC(SoCMini):
             self.mem_map["spiflash"] = 0x20000000
             self.add_spi_flash(mode="1x", module=SpiFlashModule(SpiNorFlashOpCodes.READ_1_1_1), with_master=False)
 
+    def add_ledpanel(self, jumper: int, select: int, main_panel: bool = False) -> None:
+        s_shared_en = self.ctrl_signals.en
+        s_shared_addr = self.ctrl_signals.addr
+        s_shared_wdat = self.ctrl_signals.wdat
+
+        s_ctrl_en = Signal()
+        s_ctrl_addr = Signal(16)
+        s_ctrl_wdat = Signal(24)
+        s_r0 = Signal()
+        s_g0 = Signal()
+        s_b0 = Signal()
+        s_r1 = Signal()
+        s_g1 = Signal()
+        s_b1 = Signal()
+        s_a = Signal()
+        s_b = Signal()
+        s_c = Signal()
+        s_d = Signal()
+        s_e = Signal()
+        s_clk = Signal()
+        s_stb = Signal()
+        s_oe = Signal()
+        self.specials += Instance("ledpanel",
+            i_ctrl_clk = ClockSignal(),
+            i_ctrl_en = s_ctrl_en,
+            i_ctrl_addr = s_ctrl_addr,
+            i_ctrl_wdat = s_ctrl_wdat,
+            i_display_clock = ClockSignal("sys"),
+            o_panel_r0 = s_r0,
+            o_panel_g0 = s_g0,
+            o_panel_b0 = s_b0,
+            o_panel_r1 = s_r1,
+            o_panel_g1 = s_g1,
+            o_panel_b1 = s_b1,
+            o_panel_a = s_a,
+            o_panel_b = s_b,
+            o_panel_c = s_c,
+            o_panel_d = s_d,
+            o_panel_e = s_e,
+            o_panel_clk = s_clk,
+            o_panel_stb = s_stb,
+            o_panel_oe = s_oe
+        )
+
+        rgb_output4 = self.platform.request('rgb_output', jumper)
+        panel_r0 = rgb_output4.panel_r0
+        panel_g0 = rgb_output4.panel_g0
+        panel_b0 = rgb_output4.panel_b0
+        panel_r1 = rgb_output4.panel_r1
+        panel_g1 = rgb_output4.panel_g1
+        panel_b1 = rgb_output4.panel_b1
+
+        self.comb += panel_r0.eq(s_r0)
+        self.comb += panel_g0.eq(s_g0)
+        self.comb += panel_b0.eq(s_b0)
+        self.comb += panel_r1.eq(s_r1)
+        self.comb += panel_g1.eq(s_g1)
+        self.comb += panel_b1.eq(s_b1)
+
+        self.comb += s_ctrl_en.eq(s_shared_en[select])
+        self.comb += s_ctrl_addr.eq(s_shared_addr)
+        self.comb += s_ctrl_wdat.eq(s_shared_wdat)
+
+        if main_panel:
+            shared_output = self.platform.request('shared_output')
+            panel_E = shared_output.panel_e
+            panel_A = shared_output.panel_a
+            panel_B = shared_output.panel_b
+            panel_C = shared_output.panel_c
+            panel_D = shared_output.panel_d
+            panel_clk = shared_output.panel_clk
+            panel_stb = shared_output.panel_stb
+            panel_oe = shared_output.panel_oe
+
+            self.comb += panel_A.eq(s_a)
+            self.comb += panel_B.eq(s_b)
+            self.comb += panel_C.eq(s_c)
+            self.comb += panel_D.eq(s_d)
+            self.comb += panel_E.eq(s_e)
+            self.comb += panel_clk.eq(s_clk)
+            self.comb += panel_stb.eq(s_stb)
+            self.comb += panel_oe.eq(s_oe)
 
 # Build --------------------------------------------------------------------------------------------
 
