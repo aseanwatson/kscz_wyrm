@@ -218,6 +218,11 @@ class BaseSoC(SoCMini):
         **kwargs):
         platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
+        # Extend Platform --------------------------------------------------------------------------
+        platform.add_source("ledpanel.v")
+        platform.add_source("udp_panel_writer.v")
+        platform.add_extension(_gpios)
+
         # LED Panel --------------------------------------------------------------------------------
         s_shared_en = Signal(8)
         s_shared_addr = Signal(16)
@@ -261,9 +266,7 @@ class BaseSoC(SoCMini):
             o_panel_stb = s_j4stb,
             o_panel_oe = s_j4oe
         )
-        platform.add_source("ledpanel.v")
 
-        platform.add_extension(_gpios)
         j4r0 = platform.request("panel_r0", 4)
         j4g0 = platform.request("panel_g0", 4)
         j4b0 = platform.request("panel_b0", 4)
@@ -874,7 +877,6 @@ class BaseSoC(SoCMini):
             o_ctrl_wdat = s_shared_wdat,
             o_led_reg = s_udp_led,
         )
-        platform.add_source("udp_panel_writer.v")
 
         self.comb += s_udp_reset.eq(0)
         self.sync += s_udp_source_valid.eq(udp_rx.valid)
