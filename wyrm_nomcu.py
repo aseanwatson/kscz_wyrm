@@ -214,12 +214,7 @@ class BaseSoC(SoCMini):
         j4r1 = platform.request("panel_r1", 4)
         j4g1 = platform.request("panel_g1", 4)
         j4b1 = platform.request("panel_b1", 4)
-        # FIXME
-        #self.panel_en = CSRStorage(size=4)
-        #self.panel_addr = CSRStorage(size=16)
-        #self.panel_wdat = CSRStorage(size=24)
 
-        #self.comb += s_shared_en.eq(self.panel_en.storage)
 
         self.comb += j4r0.eq(s_j4r0)
         self.comb += j4g0.eq(s_j4g0)
