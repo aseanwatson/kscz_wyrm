@@ -101,6 +101,14 @@ class BaseSoC(SoCMini):
         platform.add_source("ledpanel.v")
         platform.add_source("udp_panel_writer.v")
 
+        # A note about "shared_output":
+        # _connectors_v8_0 in litex-boards/litex_boards/platforms/colorlight_5a_75b
+        # has the same values for columns 7-14. That's because the FPGA balls
+        # corresponding to the a/b/c/d/e/clk/stb/oe pins on all 8 connectors on
+        # the board. (The same is true for other versions).
+        #
+        # These are kept separate with "number" = 0 so that platform.request will
+        # not return the same ball multiple times.
         platform.add_extension([
             ("shared_output", 0,
                 Subsignal("panel_e", Pins("j1:7")),
@@ -122,6 +130,8 @@ class BaseSoC(SoCMini):
         g_offset = rgb_order.index('g')
         b_offset = rgb_order.index('b')
 
+        # Unlike the shared_output, each connector listed here has a unique ball
+        # it's tied to; we need a resource for each of the 8 connectors.
         for connector in range(1,9):
             platform.add_extension([
                 ("rgb_output", connector,
