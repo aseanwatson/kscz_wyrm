@@ -95,7 +95,7 @@ class BaseSoC(SoCMini):
         rom              = None,
         rgb_order        = 'rgb',
         **kwargs):
-        self.platform = platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
+        platform = colorlight_5a_75b.Platform(revision=revision, toolchain=toolchain)
 
         # Extend Platform --------------------------------------------------------------------------
         platform.add_source("ledpanel.v")
@@ -154,15 +154,31 @@ class BaseSoC(SoCMini):
         s_shared_addr = self.ctrl_signals.addr
         s_shared_wdat = self.ctrl_signals.wdat
 
-        self.add_ledpanel(connector=4, select_line=0,
-            shared_output=self.platform.request('shared_output'))
-        self.add_ledpanel(connector=3, select_line=1)
-        self.add_ledpanel(connector=2, select_line=2)
-        self.add_ledpanel(connector=1, select_line=3)
-        self.add_ledpanel(connector=5, select_line=4)
-        self.add_ledpanel(connector=6, select_line=4) # review select_line=5?
-        self.add_ledpanel(connector=7, select_line=4) # review select_line=6?
-        self.add_ledpanel(connector=8, select_line=4) # review select_line=7?
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 4),
+            select_line=0,
+            shared_output=platform.request('shared_output'))
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 3),
+            select_line=1)
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 2),
+            select_line=2)
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 1),
+            select_line=3)
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 5),
+            select_line=4)
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 6),
+            select_line=4) #review select_line=5
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 7),
+            select_line=4) #review select_line=6
+        self.add_ledpanel(
+            rgb_output=platform.request("rgb_output", 8),
+            select_line=4) #review select_line=7
 
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, int(sys_clk_freq),
@@ -253,7 +269,7 @@ class BaseSoC(SoCMini):
             self.mem_map["spiflash"] = 0x20000000
             self.add_spi_flash(mode="1x", module=SpiFlashModule(SpiNorFlashOpCodes.READ_1_1_1), with_master=False)
 
-    def add_ledpanel(self, connector: int, select_line: int, shared_output: Record|None = None) -> None:
+    def add_ledpanel(self, rgb_output: Record, select_line: int, shared_output: Record|None = None) -> None:
         ledpanel = Instance("ledpanel",
             Instance.Input('ctrl_clk', ClockSignal()),
             Instance.Input('ctrl_en'),
@@ -277,8 +293,6 @@ class BaseSoC(SoCMini):
         )
 
         self.specials += ledpanel
-
-        rgb_output = self.platform.request('rgb_output', connector)
 
         self.comb += [
             rgb_output.panel_r0.eq(ledpanel.get_io('panel_r0')),
