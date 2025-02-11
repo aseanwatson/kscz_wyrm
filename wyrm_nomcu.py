@@ -243,87 +243,60 @@ class BaseSoC(SoCMini):
             self.add_spi_flash(mode="1x", module=SpiFlashModule(SpiNorFlashOpCodes.READ_1_1_1), with_master=False)
 
     def add_ledpanel(self, jumper: int, select: int, main_panel: bool = False) -> None:
-        s_shared_en = self.ctrl_signals.en
-        s_shared_addr = self.ctrl_signals.addr
-        s_shared_wdat = self.ctrl_signals.wdat
-
-        s_ctrl_en = Signal()
-        s_ctrl_addr = Signal(16)
-        s_ctrl_wdat = Signal(24)
-        s_r0 = Signal()
-        s_g0 = Signal()
-        s_b0 = Signal()
-        s_r1 = Signal()
-        s_g1 = Signal()
-        s_b1 = Signal()
-        s_a = Signal()
-        s_b = Signal()
-        s_c = Signal()
-        s_d = Signal()
-        s_e = Signal()
-        s_clk = Signal()
-        s_stb = Signal()
-        s_oe = Signal()
-        self.specials += Instance("ledpanel",
-            i_ctrl_clk = ClockSignal(),
-            i_ctrl_en = s_ctrl_en,
-            i_ctrl_addr = s_ctrl_addr,
-            i_ctrl_wdat = s_ctrl_wdat,
-            i_display_clock = ClockSignal("sys"),
-            o_panel_r0 = s_r0,
-            o_panel_g0 = s_g0,
-            o_panel_b0 = s_b0,
-            o_panel_r1 = s_r1,
-            o_panel_g1 = s_g1,
-            o_panel_b1 = s_b1,
-            o_panel_a = s_a,
-            o_panel_b = s_b,
-            o_panel_c = s_c,
-            o_panel_d = s_d,
-            o_panel_e = s_e,
-            o_panel_clk = s_clk,
-            o_panel_stb = s_stb,
-            o_panel_oe = s_oe
+        ledpanel = Instance("ledpanel",
+            Instance.Input('ctrl_clk', ClockSignal()),
+            Instance.Input('ctrl_en'),
+            Instance.Input('ctrl_addr', Signal(16)),
+            Instance.Input('ctrl_wdat', Signal(24)),
+            Instance.Input('display_clock', ClockSignal("sys")),
+            Instance.Output('panel_r0'),
+            Instance.Output('panel_g0'),
+            Instance.Output('panel_b0'),
+            Instance.Output('panel_r1'),
+            Instance.Output('panel_g1'),
+            Instance.Output('panel_b1'),
+            Instance.Output('panel_a'),
+            Instance.Output('panel_b'),
+            Instance.Output('panel_c'),
+            Instance.Output('panel_d'),
+            Instance.Output('panel_e'),
+            Instance.Output('panel_clk'),
+            Instance.Output('panel_stb'),
+            Instance.Output('panel_oe'),
         )
 
+        self.specials += ledpanel
+
         rgb_output = self.platform.request('rgb_output', jumper)
-        panel_r0 = rgb_output.panel_r0
-        panel_g0 = rgb_output.panel_g0
-        panel_b0 = rgb_output.panel_b0
-        panel_r1 = rgb_output.panel_r1
-        panel_g1 = rgb_output.panel_g1
-        panel_b1 = rgb_output.panel_b1
 
-        self.comb += panel_r0.eq(s_r0)
-        self.comb += panel_g0.eq(s_g0)
-        self.comb += panel_b0.eq(s_b0)
-        self.comb += panel_r1.eq(s_r1)
-        self.comb += panel_g1.eq(s_g1)
-        self.comb += panel_b1.eq(s_b1)
+        self.comb += [
+            rgb_output.panel_r0.eq(ledpanel.get_io('panel_r0')),
+            rgb_output.panel_g0.eq(ledpanel.get_io('panel_g0')),
+            rgb_output.panel_b0.eq(ledpanel.get_io('panel_b0')),
+            rgb_output.panel_r1.eq(ledpanel.get_io('panel_r1')),
+            rgb_output.panel_g1.eq(ledpanel.get_io('panel_g1')),
+            rgb_output.panel_b1.eq(ledpanel.get_io('panel_b1')),
+        ]
 
-        self.comb += s_ctrl_en.eq(s_shared_en[select])
-        self.comb += s_ctrl_addr.eq(s_shared_addr)
-        self.comb += s_ctrl_wdat.eq(s_shared_wdat)
+        self.comb += [
+            ledpanel.get_io('ctrl_en').eq(self.ctrl_signals.en[select]),
+            ledpanel.get_io('ctrl_addr').eq(self.ctrl_signals.addr),
+            ledpanel.get_io('ctrl_wdat').eq(self.ctrl_signals.wdat),
+        ]
 
         if main_panel:
             shared_output = self.platform.request('shared_output')
-            panel_E = shared_output.panel_e
-            panel_A = shared_output.panel_a
-            panel_B = shared_output.panel_b
-            panel_C = shared_output.panel_c
-            panel_D = shared_output.panel_d
-            panel_clk = shared_output.panel_clk
-            panel_stb = shared_output.panel_stb
-            panel_oe = shared_output.panel_oe
 
-            self.comb += panel_A.eq(s_a)
-            self.comb += panel_B.eq(s_b)
-            self.comb += panel_C.eq(s_c)
-            self.comb += panel_D.eq(s_d)
-            self.comb += panel_E.eq(s_e)
-            self.comb += panel_clk.eq(s_clk)
-            self.comb += panel_stb.eq(s_stb)
-            self.comb += panel_oe.eq(s_oe)
+            self.comb += [
+                shared_output.panel_a.eq(ledpanel.get_io('panel_a')),
+                shared_output.panel_b.eq(ledpanel.get_io('panel_b')),
+                shared_output.panel_c.eq(ledpanel.get_io('panel_c')),
+                shared_output.panel_d.eq(ledpanel.get_io('panel_d')),
+                shared_output.panel_e.eq(ledpanel.get_io('panel_e')),
+                shared_output.panel_clk.eq(ledpanel.get_io('panel_clk')),
+                shared_output.panel_stb.eq(ledpanel.get_io('panel_stb')),
+                shared_output.panel_oe.eq(ledpanel.get_io('panel_oe')),
+            ]
 
 # Build --------------------------------------------------------------------------------------------
 
