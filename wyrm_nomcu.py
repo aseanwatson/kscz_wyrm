@@ -122,15 +122,15 @@ class BaseSoC(SoCMini):
         g_offset = rgb_order.index('g')
         b_offset = rgb_order.index('b')
 
-        for jumper in (1,2,3,4,5,6,7,8):
+        for connector in (1,2,3,4,5,6,7,8):
             platform.add_extension([
-                ("rgb_output", jumper,
-                    Subsignal("panel_r0", Pins(f"j{jumper}:{r_offset}")),
-                    Subsignal("panel_g0", Pins(f"j{jumper}:{g_offset}")),
-                    Subsignal("panel_b0", Pins(f"j{jumper}:{b_offset}")),
-                    Subsignal("panel_r1", Pins(f"j{jumper}:{r_offset+4}")),
-                    Subsignal("panel_g1", Pins(f"j{jumper}:{g_offset+4}")),
-                    Subsignal("panel_b1", Pins(f"j{jumper}:{b_offset+4}")),
+                ("rgb_output", connector,
+                    Subsignal("panel_r0", Pins(f"j{connector}:{r_offset}")),
+                    Subsignal("panel_g0", Pins(f"j{connector}:{g_offset}")),
+                    Subsignal("panel_b0", Pins(f"j{connector}:{b_offset}")),
+                    Subsignal("panel_r1", Pins(f"j{connector}:{r_offset+4}")),
+                    Subsignal("panel_g1", Pins(f"j{connector}:{g_offset+4}")),
+                    Subsignal("panel_b1", Pins(f"j{connector}:{b_offset+4}")),
                     IOStandard("LVCMOS33"))])
 
         # LED Panel --------------------------------------------------------------------------------
@@ -144,14 +144,14 @@ class BaseSoC(SoCMini):
         s_shared_addr = self.ctrl_signals.addr
         s_shared_wdat = self.ctrl_signals.wdat
 
-        self.add_ledpanel(jumper=4, select=0, main_panel=True)
-        self.add_ledpanel(jumper=3, select=1)
-        self.add_ledpanel(jumper=2, select=2)
-        self.add_ledpanel(jumper=1, select=3)
-        self.add_ledpanel(jumper=5, select=4)
-        self.add_ledpanel(jumper=6, select=4) # review select=5?
-        self.add_ledpanel(jumper=7, select=4) # review select=6?
-        self.add_ledpanel(jumper=8, select=4) # review select=7?
+        self.add_ledpanel(connector=4, select_line=0, connect_shared=True)
+        self.add_ledpanel(connector=3, select_line=1)
+        self.add_ledpanel(connector=2, select_line=2)
+        self.add_ledpanel(connector=1, select_line=3)
+        self.add_ledpanel(connector=5, select_line=4)
+        self.add_ledpanel(connector=6, select_line=4) # review select_line=5?
+        self.add_ledpanel(connector=7, select_line=4) # review select_line=6?
+        self.add_ledpanel(connector=8, select_line=4) # review select_line=7?
 
         # CRG --------------------------------------------------------------------------------------
         self.crg = _CRG(platform, int(sys_clk_freq),
@@ -242,7 +242,7 @@ class BaseSoC(SoCMini):
             self.mem_map["spiflash"] = 0x20000000
             self.add_spi_flash(mode="1x", module=SpiFlashModule(SpiNorFlashOpCodes.READ_1_1_1), with_master=False)
 
-    def add_ledpanel(self, jumper: int, select: int, main_panel: bool = False) -> None:
+    def add_ledpanel(self, connector: int, select_line: int, connect_shared: bool = False) -> None:
         ledpanel = Instance("ledpanel",
             Instance.Input('ctrl_clk', ClockSignal()),
             Instance.Input('ctrl_en'),
@@ -267,7 +267,7 @@ class BaseSoC(SoCMini):
 
         self.specials += ledpanel
 
-        rgb_output = self.platform.request('rgb_output', jumper)
+        rgb_output = self.platform.request('rgb_output', connector)
 
         self.comb += [
             rgb_output.panel_r0.eq(ledpanel.get_io('panel_r0')),
@@ -279,12 +279,12 @@ class BaseSoC(SoCMini):
         ]
 
         self.comb += [
-            ledpanel.get_io('ctrl_en').eq(self.ctrl_signals.en[select]),
+            ledpanel.get_io('ctrl_en').eq(self.ctrl_signals.en[select_line]),
             ledpanel.get_io('ctrl_addr').eq(self.ctrl_signals.addr),
             ledpanel.get_io('ctrl_wdat').eq(self.ctrl_signals.wdat),
         ]
 
-        if main_panel:
+        if connect_shared:
             shared_output = self.platform.request('shared_output')
 
             self.comb += [
