@@ -122,7 +122,7 @@ class BaseSoC(SoCMini):
         g_offset = rgb_order.index('g')
         b_offset = rgb_order.index('b')
 
-        for connector in (1,2,3,4,5,6,7,8):
+        for connector in range(1,9):
             platform.add_extension([
                 ("rgb_output", connector,
                     Subsignal("panel_r0", Pins(f"j{connector}:{r_offset}")),
