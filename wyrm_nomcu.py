@@ -286,13 +286,13 @@ class BaseSoC(SoCMini):
             o_panel_oe = s_oe
         )
 
-        rgb_output4 = self.platform.request('rgb_output', jumper)
-        panel_r0 = rgb_output4.panel_r0
-        panel_g0 = rgb_output4.panel_g0
-        panel_b0 = rgb_output4.panel_b0
-        panel_r1 = rgb_output4.panel_r1
-        panel_g1 = rgb_output4.panel_g1
-        panel_b1 = rgb_output4.panel_b1
+        rgb_output = self.platform.request('rgb_output', jumper)
+        panel_r0 = rgb_output.panel_r0
+        panel_g0 = rgb_output.panel_g0
+        panel_b0 = rgb_output.panel_b0
+        panel_r1 = rgb_output.panel_r1
+        panel_g1 = rgb_output.panel_g1
+        panel_b1 = rgb_output.panel_b1
 
         self.comb += panel_r0.eq(s_r0)
         self.comb += panel_g0.eq(s_g0)
